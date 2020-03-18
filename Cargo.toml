@@ -1,10 +1,9 @@
 [package]
 name = "cargo-diet"
-version = "0.1.0"
+version = "0.0.0"
 authors = ["Sebastian Thiel <sebastian.thiel@icloud.com>"]
 edition = "2018"
 description = "A cargo-companion to compute exclude and include directives"
-publish = false
 include = ["src/**/*", "Cargo.*", "README.md", "LICENSE.md"]
 license = "MIT"
 repository = "https://github.com/crates-io/cargo-diet"
