@@ -1,14 +1,20 @@
 [package]
 name = "cargo-diet"
-version = "0.0.0"
-authors = ["Sebastian Thiel <sebastian.thiel@icloud.com>"]
+version = "0.1.0"
+authors = ["Sebastian Thiel <byronimo@gmail.com>"]
+publish = false
 edition = "2018"
-description = "A cargo-companion to compute exclude and include directives"
-include = ["src/**/*", "Cargo.*", "README.md", "LICENSE.md"]
-license = "MIT"
-repository = "https://github.com/crates-io/cargo-diet"
-readme = "README.md"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+failure = "0.1.1"
+failure-tools = "4.0.2"
+structopt = "0.3.14"
+
+[[bin]]
+name="cargo-diet"
+path="src/main.rs"
+
+[profile.release]
+panic = 'unwind'
+incremental = false
+overflow-checks = true

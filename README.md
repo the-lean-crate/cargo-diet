@@ -1,3 +1,5 @@
-Part of **The Lean Crate Initiative**.
+## Getting Started
 
-For now 'just' a reservation of the desired name.
+Find-and-replace the term `cargo-diet` with the name of your command-line application.
+
+
