@@ -1,14 +1,14 @@
 [package]
 name = "cargo-diet"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 publish = false
 edition = "2018"
 
 [dependencies]
-failure = "0.1.1"
-failure-tools = "4.0.2"
 structopt = "0.3.14"
+anyhow = "1.0.31"
+quick-error = "1.2.3"
 
 [[bin]]
 name="cargo-diet"

@@ -1,7 +1,28 @@
-extern crate failure;
+#[macro_use]
+extern crate quick_error;
 
-use failure::Error;
+mod error {
+    quick_error! {
+        #[derive(Debug)]
+        pub enum Error {
+            Bug(d: &'static str) {
+                display("{}", d)
+            }
+            Message(d: String) {
+                display("{}", d)
+            }
+            Io(err: std::io::Error) {
+                from()
+                cause(err)
+            }
+        }
+    }
+}
 
-pub fn fun() -> Result<(), Error> {
-    unimplemented!();
+pub use error::Error;
+pub type Result<T> = std::result::Result<T, Error>;
+
+pub fn fun(path: &std::path::Path) -> Result<()> {
+    std::fs::read(path)?;
+    Ok(())
 }

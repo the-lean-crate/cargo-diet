@@ -1,11 +1,7 @@
-extern crate cargo_diet;
-extern crate failure;
-extern crate failure_tools;
 #[macro_use]
 extern crate structopt;
 
-use failure::Error;
-use failure_tools::ok_or_exit;
+use anyhow::Context;
 use structopt::StructOpt;
 
 mod options {
@@ -16,25 +12,22 @@ mod options {
     pub struct Args {
         /// Activate debug mode
         #[structopt(short = "d", long = "debug")]
-        debug: bool,
+        pub debug: bool,
         /// Set speed
         #[structopt(short = "s", long = "speed", default_value = "42")]
-        speed: f64,
+        pub speed: f64,
         /// Input file
         #[structopt(parse(from_os_str))]
-        input: PathBuf,
+        pub input: PathBuf,
         /// Output file, stdout if not present
         #[structopt(parse(from_os_str))]
-        output: Option<PathBuf>,
+        pub output: Option<PathBuf>,
     }
 }
 
-fn run() -> Result<(), Error> {
+fn main() -> anyhow::Result<()> {
     let opt = options::Args::from_args();
     println!("{:?}", opt);
-    cargo_diet::fun()
-}
-
-fn main() {
-    ok_or_exit(run())
+    let path = opt.output.unwrap_or("foo.txt".into());
+    cargo_diet::fun(&path).with_context(|| format!("Could not handle file at path {}", path.display()))
 }
