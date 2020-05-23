@@ -13,7 +13,7 @@ SUCCESSFULLY=0
 WITH_FAILURE=1
 
 function remove_paths() {
-    sed 's_\`/.*\`_<redacted>_g'
+    sed -E 's_\`/.*\`_<redacted>_g'
 }
 
 (sandbox
