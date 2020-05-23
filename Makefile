@@ -34,4 +34,7 @@ continuous-journey-tests: ## Run journey-tests, continuously
 
 interactive-developer-environment-in-docker: ## Get a prompt into a docker container with all required tools
 	docker build -t $(docker_image) - < etc/developer.Dockerfile
-	docker run -v $$PWD:/volume -w /volume -it $(docker_image)
+	docker run \
+		-v ${HOME}/.cargo/registry:/root/.cargo/registry \
+		-v ${HOME}/.cargo/git:/root/.cargo/git \
+		-v $$PWD:/volume -w /volume -it $(docker_image)
