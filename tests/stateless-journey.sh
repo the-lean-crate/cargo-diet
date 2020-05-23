@@ -45,10 +45,12 @@ function remove_paths() {
       expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
     }
 
-    when "running it again" && expect_run ${SUCCESSFULLY} "$exe" diet
+    (when "running it again" &&
+      step "(run it one more time)" && expect_run ${SUCCESSFULLY} "$exe" diet
 
-    it "produces exactly the same output as before" && {
-      expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
-    }
+      it "produces exactly the same output as before" && {
+        expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
+      }
+    )
   )
 )
