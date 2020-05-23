@@ -22,7 +22,6 @@ mod error {
 pub use error::Error;
 pub type Result<T> = std::result::Result<T, Error>;
 
-pub fn fun(path: &std::path::Path) -> Result<()> {
-    std::fs::read(path)?;
+pub fn fun() -> Result<()> {
     Ok(())
 }
