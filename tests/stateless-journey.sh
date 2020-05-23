@@ -32,6 +32,9 @@ function remove_paths() {
 )
 
 (sandbox
+  export CARGO_NAME=author
+  export CARGO_EMAIL=author@example.com
+  
   (with "a newly initialized cargo project"
     step "init cargo project" &&
       expect_run ${SUCCESSFULLY} cargo init --name library --bin
