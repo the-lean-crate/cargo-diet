@@ -121,7 +121,7 @@ function expect_run () {
   local output=
   set +e
   if [[ -n "${SNAPSHOT_FILTER-}" ]]; then
-    output="$("$@" 2>&1 | "$SNAPSHOT_FILTER")"
+    output="$(set -o pipefail; "$@" 2>&1 | "$SNAPSHOT_FILTER")"
   else
     output="$("$@" 2>&1)"
   fi

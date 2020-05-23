@@ -9,6 +9,7 @@ edition = "2018"
 structopt = "0.3.14"
 anyhow = "1.0.31"
 quick-error = "1.2.3"
+locate-cargo-manifest = "0.2.0"
 
 [[bin]]
 name="cargo-diet"

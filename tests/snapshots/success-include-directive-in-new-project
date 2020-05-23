@@ -1,1 +1,0 @@
-Args { debug: false, speed: 42.0, input: "/dev/fd/63", output: None }

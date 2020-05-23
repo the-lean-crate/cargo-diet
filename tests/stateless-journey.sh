@@ -12,16 +12,21 @@ snapshot="$root/snapshots"
 SUCCESSFULLY=0
 WITH_FAILURE=1
 
+function remove_paths() {
+    sed 's_\`/.*\`_<redacted>_g'
+}
+
 (sandbox
   (with "with no cargo project"
     it "fails with an error message" && {
+      SNAPSHOT_FILTER=remove_paths \
       WITH_SNAPSHOT="$snapshot/failure-no-cargo-manifest" \
-      expect_run ${WITH_FAILURE} "$exe"
+      expect_run ${WITH_FAILURE} "$exe" diet
     }
   )
   (when "asking for help"
     it "succeeds" && {
-      expect_run ${SUCCESSFULLY} "$exe" --help
+      expect_run ${SUCCESSFULLY} "$exe" diet --help
     }
   )
 )
@@ -33,14 +38,14 @@ WITH_FAILURE=1
 
     it "runs successfully" && {
       WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
-      expect_run ${SUCCESSFULLY} "$exe"
+      expect_run ${SUCCESSFULLY} "$exe" diet
     }
 
     it "modifies Cargo.toml to contain an include directive" && {
       expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
     }
 
-    when "running it again" && expect_run ${SUCCESSFULLY} "$exe"
+    when "running it again" && expect_run ${SUCCESSFULLY} "$exe" diet
 
     it "produces exactly the same output as before" && {
       expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
