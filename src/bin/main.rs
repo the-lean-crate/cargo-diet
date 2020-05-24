@@ -3,7 +3,7 @@ extern crate structopt;
 
 use structopt::StructOpt;
 
-mod options {
+mod args {
     #[derive(Debug, StructOpt)]
     #[structopt(bin_name = "cargo")]
     pub enum Command {
@@ -20,7 +20,7 @@ mod options {
 }
 
 fn main() -> anyhow::Result<()> {
-    let options::Command::Diet(_args) = options::Command::from_args();
-    cargo_diet::fun()?;
+    let args::Command::Diet(_args) = args::Command::from_args();
+    cargo_diet::execute()?;
     Ok(())
 }
