@@ -2,20 +2,93 @@
 extern crate quick_error;
 
 use locate_cargo_manifest::{locate_manifest, LocateManifestError};
-use std::str::FromStr;
 
 mod error;
+use criner_waste_report::{CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile};
 pub use error::Error;
+use std::{
+    fs,
+    io::{BufRead, BufReader, Cursor},
+    str::FromStr,
+};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-fn edit(mut doc: toml_edit::Document) -> Result<toml_edit::Document> {
-    doc["package"]["include"] = toml_edit::value({
+fn report_lean_crate(mut out: impl std::io::Write) -> std::io::Result<()> {
+    writeln!(out, "Your crate is perfectly lean!")
+}
+
+fn report_savings(
+    total_size_in_bytes: u64,
+    wasted_files: Vec<WastedFile>,
+    mut out: impl std::io::Write,
+) -> std::io::Result<()> {
+    writeln!(
+        out,
+        "We saved you {} in {} files",
+        bytesize::ByteSize(total_size_in_bytes),
+        wasted_files.len()
+    )?;
+    for (path, _size) in wasted_files {
+        writeln!(out, "{}", path)?;
+    }
+    Ok(())
+}
+
+fn edit(mut doc: toml_edit::Document, package: TarPackage) -> Result<toml_edit::Document> {
+    let report = Report::from_package(
+        "crate-name does not matter",
+        "crate version does not matter",
+        package,
+    );
+    match report {
+        Report::Version { total_size_in_bytes, wasted_files, suggested_fix, ..} => {
+            if let Some(fix) = suggested_fix {
+                report_savings(total_size_in_bytes, wasted_files, std::io::stdout()).ok();
+                match fix {
+                    Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
+                    Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),
+                    Fix::RemoveExcludeAndUseInclude { include, .. }=> {
+                        remove_exclude(&mut doc);
+                        set_include(&mut doc, include);
+                    }
+                    Fix::RemoveExclude => {
+                        remove_exclude(&mut doc);
+                    }
+                };
+            } else {
+                report_lean_crate(std::io::stdout()).ok();
+            }
+        },
+        _ => unreachable!("Reports should always start out as Versions - this should probably not be necessary here"),
+    };
+    Ok(doc)
+}
+
+fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Patterns) {
+    doc["package"][key] = toml_edit::value({
         let mut v = toml_edit::Array::default();
-        v.push("src/*");
+        for pattern in patterns {
+            v.push(pattern);
+        }
         v
     });
-    Ok(doc)
+}
+
+fn set_exclude(doc: &mut toml_edit::Document, exclude: Patterns) {
+    set_package_array(doc, "exclude", exclude)
+}
+
+fn set_include(doc: &mut toml_edit::Document, include: Patterns) {
+    set_package_array(doc, "include", include)
+}
+
+fn remove_exclude(doc: &mut toml_edit::Document) {
+    doc.as_table_mut()
+        .entry("package")
+        .as_table_mut()
+        .expect("table")
+        .remove("exclude");
 }
 
 fn into_manifest_location_error(err: LocateManifestError) -> Error {
@@ -26,11 +99,90 @@ fn into_manifest_location_error(err: LocateManifestError) -> Error {
     }
 }
 
+fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
+    let mut entries = Vec::new();
+    let mut meta_entries = Vec::new();
+    let paths = BufReader::new(Cursor::new(lines))
+        .lines()
+        .collect::<std::result::Result<Vec<_>, _>>()?;
+    let cargo_manifest = CargoConfig::from(
+        fs::read(
+            paths
+                .iter()
+                .find(|p| *p == "Cargo.toml")
+                .expect("cargo manifest"),
+        )?
+        .as_slice(),
+    );
+    let interesting_paths = {
+        let mut v = vec!["Cargo.toml".to_string()];
+        v.push(
+            cargo_manifest
+                .actual_or_expected_build_script_path()
+                .to_owned(),
+        );
+        v.push(cargo_manifest.lib_path().to_owned());
+        v.extend(cargo_manifest.bin_paths().into_iter().map(|s| s.to_owned()));
+        v
+    };
+
+    for path in paths {
+        if path == "Cargo.toml.orig" {
+            continue;
+        }
+
+        const REGULAR_FILE: u8 = b'0';
+        let meta = fs::metadata(&path)?;
+        meta_entries.push(TarHeader {
+            path: path.as_bytes().to_owned(),
+            size: meta.len(),
+            entry_type: REGULAR_FILE,
+        });
+
+        if interesting_paths.iter().any(|p| p == &path) {
+            entries.push((
+                TarHeader {
+                    path: path.as_bytes().to_owned(),
+                    size: meta.len(),
+                    entry_type: REGULAR_FILE,
+                },
+                fs::read(path)?,
+            ))
+        }
+    }
+    Ok(TarPackage {
+        entries_meta_data: meta_entries,
+        entries,
+    })
+}
+
+fn cargo_package_content() -> Result<TarPackage> {
+    let cargo = std::env::var("CARGO").unwrap_or("cargo".to_owned());
+    let output = std::process::Command::new(cargo)
+        .arg("package")
+        .arg("--no-verify")
+        .arg("--offline")
+        .arg("--allow-dirty")
+        .arg("--quiet")
+        .arg("--list")
+        .output()?;
+    if !output.status.success() {
+        Err(LocateManifestError::CargoExecution {
+            stderr: output.stderr,
+        }
+        .into())
+    } else {
+        tar_package_from_paths(output.stdout)
+    }
+}
+
 pub fn execute() -> Result<()> {
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
-    let document = edit(toml_edit::Document::from_str(&std::fs::read_to_string(
-        &manifest_path,
-    )?)?)?;
+    let package = cargo_package_content()?;
+    let document = edit(
+        toml_edit::Document::from_str(&std::fs::read_to_string(&manifest_path)?)?,
+        package,
+    )?;
     std::fs::write(manifest_path, document.to_string_in_original_order())?;
     Ok(())
 }

@@ -11,6 +11,7 @@ anyhow = "1.0.31"
 quick-error = "1.2.3"
 locate-cargo-manifest = "0.2.0"
 toml_edit = "0.1.5"
+bytesize = "1.0.1"
 criner-waste-report = { version = "0.1.0", default-features = false }
 
 [[bin]]
