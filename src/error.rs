@@ -15,6 +15,10 @@ quick_error! {
             from()
             cause(err)
         }
+        FileMetadata(err: std::io::Error, path: String) {
+            display("Could not open {:?} for reading file meta-data", path)
+            cause(err)
+        }
         LocateManifest(err: locate_cargo_manifest::LocateManifestError) {
             from()
             cause(err)

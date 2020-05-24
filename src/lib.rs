@@ -127,12 +127,12 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
     };
 
     for path in paths {
-        if path == "Cargo.toml.orig" {
+        if path == "Cargo.toml.orig" || path == "Cargo.lock" {
             continue;
         }
 
         const REGULAR_FILE: u8 = b'0';
-        let meta = fs::metadata(&path)?;
+        let meta = fs::metadata(&path).map_err(|err| Error::FileMetadata(err, path.to_owned()))?;
         meta_entries.push(TarHeader {
             path: path.as_bytes().to_owned(),
             size: meta.len(),
