@@ -6,6 +6,7 @@ use locate_cargo_manifest::{locate_manifest, LocateManifestError};
 mod error;
 use criner_waste_report::{CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile};
 pub use error::Error;
+use std::path::Path;
 use std::{
     fs,
     io::{BufRead, BufReader, Cursor},
@@ -68,7 +69,7 @@ fn edit(mut doc: toml_edit::Document, package: TarPackage) -> Result<toml_edit::
 fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Patterns) {
     doc["package"][key] = toml_edit::value({
         let mut v = toml_edit::Array::default();
-        for pattern in patterns {
+        for pattern in patterns.into_iter() {
             v.push(pattern);
         }
         v
@@ -126,6 +127,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         v
     };
 
+    let root = Path::new("r");
     for path in paths {
         if path == "Cargo.toml.orig" || path == "Cargo.lock" {
             continue;
@@ -134,7 +136,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         const REGULAR_FILE: u8 = b'0';
         let meta = fs::metadata(&path).map_err(|err| Error::FileMetadata(err, path.to_owned()))?;
         meta_entries.push(TarHeader {
-            path: path.as_bytes().to_owned(),
+            path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
             size: meta.len(),
             entry_type: REGULAR_FILE,
         });
@@ -142,7 +144,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         if interesting_paths.iter().any(|p| p == &path) {
             entries.push((
                 TarHeader {
-                    path: path.as_bytes().to_owned(),
+                    path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
                     size: meta.len(),
                     entry_type: REGULAR_FILE,
                 },
