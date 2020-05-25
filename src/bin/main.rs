@@ -16,11 +16,19 @@ mod args {
     }
 
     #[derive(Debug, StructOpt)]
-    pub struct Args {}
+    pub struct Args {
+        #[structopt(
+            long,
+            short = "r",
+            help = "If set, existing includes and excludes will be removed prior to running the command.\
+        That way, new files outside of any included directory will be picked up."
+        )]
+        pub reset: bool,
+    }
 }
 
 fn main() -> anyhow::Result<()> {
-    let args::Command::Diet(_args) = args::Command::from_args();
-    cargo_diet::execute()?;
+    let args::Command::Diet(args) = args::Command::from_args();
+    cargo_diet::execute(cargo_diet::Options { reset: args.reset })?;
     Ok(())
 }

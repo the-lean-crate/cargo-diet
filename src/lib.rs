@@ -178,13 +178,32 @@ fn cargo_package_content() -> Result<TarPackage> {
     }
 }
 
-pub fn execute() -> Result<()> {
+fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
+    let package = doc
+        .as_table_mut()
+        .entry("package")
+        .as_table_mut()
+        .expect("table");
+    package.remove("exclude");
+    package.remove("include");
+}
+
+#[derive(Debug, Default)]
+pub struct Options {
+    pub reset: bool,
+}
+
+pub fn execute(options: Options) -> Result<()> {
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
+
+    let mut document = toml_edit::Document::from_str(&std::fs::read_to_string(&manifest_path)?)?;
+    if options.reset {
+        clear_includes_and_excludes(&mut document);
+        std::fs::write(&manifest_path, document.to_string_in_original_order())?;
+    }
+
     let package = cargo_package_content()?;
-    let document = edit(
-        toml_edit::Document::from_str(&std::fs::read_to_string(&manifest_path)?)?,
-        package,
-    )?;
+    let document = edit(document, package)?;
     std::fs::write(manifest_path, document.to_string_in_original_order())?;
     Ok(())
 }

@@ -74,6 +74,31 @@ function remove_paths() {
           }
         )
       )
+      (with "a new README file in the project root"
+        touch README.md
+
+        (when "running it again" &&
+          it "runs successfully" && {
+            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
+            expect_run ${SUCCESSFULLY} "$exe" diet
+          }
+
+          it "produces the same include as before, effectively not picking up a file it should pick up!" && {
+            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded" "Cargo.toml"
+          }
+        )
+
+        (when "running it again and the --reset flag set" &&
+          it "runs successfully" && {
+            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
+            expect_run ${SUCCESSFULLY} "$exe" diet --reset
+          }
+
+          it "produces a new include that includes the new file." && {
+            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
+          }
+        )
+      )
     )
   )
 )
