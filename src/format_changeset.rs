@@ -91,20 +91,15 @@ pub fn format_changeset(
         let hunk_before_first_change = first_changed_hunk.and_then(|l| l.checked_sub(1));
         print_context(
             hunk_before_first_change.map(|l| {
-                let iter = lines_of(&diffs[l]);
-                let lines_outside_of_context = diffs.len().saturating_sub(
-                    iter.size_hint()
-                        .1
-                        .map(|upper| upper.saturating_sub(context))
-                        .unwrap_or(0),
-                );
+                let lines_outside_of_context =
+                    lines_of(&diffs[l]).by_ref().count().saturating_sub(context);
                 (
                     if lines_outside_of_context > 0 {
                         Some(format!("[…skipped {} lines…]", lines_outside_of_context))
                     } else {
                         None
                     },
-                    iter.skip(lines_outside_of_context),
+                    lines_of(&diffs[l]).skip(lines_outside_of_context),
                     None,
                 )
             }),
@@ -134,13 +129,11 @@ pub fn format_changeset(
         let hunk_after_last_change = last_changed_hunk.map(|l| (l + 1).min(diffs.len()));
         print_context(
             hunk_after_last_change.map(|l| {
-                let iter = lines_of(&diffs[l]);
-                let skipped_lines_note = iter
-                    .size_hint()
-                    .1
-                    .and_then(|upper| upper.checked_sub(context))
+                let skipped_lines_note = lines_of(&diffs[l])
+                    .count()
+                    .checked_sub(context)
                     .map(|skipped| format!("[…skipped {} lines…]", skipped));
-                (None, iter.take(context), skipped_lines_note)
+                (None, lines_of(&diffs[l]).take(context), skipped_lines_note)
             }),
             &mut t,
         )?;

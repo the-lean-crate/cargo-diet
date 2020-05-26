@@ -7,9 +7,11 @@ Saved 263 B in 1 files
 
 The following change WOULD be made to Cargo.toml:
 Diff - removed / added + :
-[…skipped 4 lines…]
+[…skipped 3 lines…]
+authors = ["author <author@example.com>"]
 edition = "2018"
 -include = ["src/**/*", "!**/*_test.*"]
 +include = ["src/**/*", "README.md", "!**/*_test.*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[…skipped 3 lines…]
