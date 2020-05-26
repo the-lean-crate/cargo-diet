@@ -4,6 +4,7 @@ version = "1.0.0"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 publish = false
 edition = "2018"
+include = ["src/**/*", "LICENSE.md", "README.md"]
 
 [dependencies]
 structopt = "0.3.14"
@@ -16,6 +17,8 @@ criner-waste-report = { version = "0.1.0", default-features = false }
 ansi_term = "0.12.1"
 difference = "2.0.0"
 atty = "0.2.14"
+ascii_table = "3.0.1"
+termsize = "0.1.6"
 
 [[bin]]
 name="cargo-diet"

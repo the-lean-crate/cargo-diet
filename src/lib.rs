@@ -6,13 +6,14 @@ use locate_cargo_manifest::{locate_manifest, LocateManifestError};
 mod error;
 mod format_changeset;
 
+use bytesize::ByteSize;
 use criner_waste_report::{CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile};
 pub use error::Error;
 use format_changeset::format_changeset;
-use std::path::Path;
 use std::{
     fs,
     io::{BufRead, BufReader, Cursor},
+    path::Path,
     str::FromStr,
 };
 
@@ -24,18 +25,45 @@ fn report_lean_crate(mut out: impl std::io::Write) -> std::io::Result<()> {
 
 fn report_savings(
     total_size_in_bytes: u64,
-    wasted_files: Vec<WastedFile>,
+    mut wasted_files: Vec<WastedFile>,
     mut out: impl std::io::Write,
 ) -> std::io::Result<()> {
+    use ascii_table::{Align, AsciiTable, Column};
+    use std::fmt::Display;
+
+    let mut ascii_table = AsciiTable::default();
+    ascii_table.max_width = termsize::get()
+        .unwrap_or(termsize::Size { rows: 20, cols: 80 })
+        .cols as usize;
+    ascii_table.columns.insert(
+        0,
+        Column {
+            header: "File".to_string(),
+            align: Align::Left,
+            ..Default::default()
+        },
+    );
+    ascii_table.columns.insert(
+        1,
+        Column {
+            header: "Size (Byte)".to_string(),
+            align: Align::Right,
+            ..Default::default()
+        },
+    );
+
+    wasted_files.sort_by(|x, y| x.1.cmp(&y.1));
+    let data: Vec<Vec<&dyn Display>> = wasted_files
+        .iter()
+        .map(|(path, size)| vec![path as &dyn Display, size as &dyn Display])
+        .collect();
+    ascii_table.print(data);
     writeln!(
         out,
-        "We saved you {} in {} files",
-        bytesize::ByteSize(total_size_in_bytes),
+        "Saved {} in {} files",
+        ByteSize(total_size_in_bytes),
         wasted_files.len()
     )?;
-    for (path, _size) in wasted_files {
-        writeln!(out, "{}", path)?;
-    }
     Ok(())
 }
 

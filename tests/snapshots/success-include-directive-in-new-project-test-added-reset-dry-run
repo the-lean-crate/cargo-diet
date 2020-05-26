@@ -1,6 +1,11 @@
-We saved you 263 B in 1 files
-src/lib_test.rs
-WOULD apply the following change:
+┌─────────────────┬─────────────┐
+│ File            │ Size (Byte) │
+├─────────────────┼─────────────┤
+│ src/lib_test.rs │           0 │
+└─────────────────┴─────────────┘
+Saved 263 B in 1 files
+
+The following change WOULD be made to Cargo.toml:
 Diff - removed / added + :
 […skipped 4 lines…]
 edition = "2018"

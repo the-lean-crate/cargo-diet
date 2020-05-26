@@ -1,2 +1,6 @@
-We saved you 263 B in 1 files
-src/lib_test.rs
+┌─────────────────┬─────────────┐
+│ File            │ Size (Byte) │
+├─────────────────┼─────────────┤
+│ src/lib_test.rs │           0 │
+└─────────────────┴─────────────┘
+Saved 263 B in 1 files

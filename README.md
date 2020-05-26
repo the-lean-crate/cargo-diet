@@ -5,6 +5,6 @@
 * [x] reset - clear existing include or exclude, useful if new files are added to repo that should
       be considered
 * [x] dry-run mode
-* [ ] A nicer way to print results
+* [x] A nicer way to print results
 
 
