@@ -213,7 +213,7 @@ fn write_manifest(
                 format_changeset(
                     output,
                     with_color,
-                    &difference::Changeset::new(&original_content, &edit, ""),
+                    &difference::Changeset::new(&original_content, &edit, "\n"),
                 )?
             }
         }
