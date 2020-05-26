@@ -4,8 +4,11 @@ extern crate quick_error;
 use locate_cargo_manifest::{locate_manifest, LocateManifestError};
 
 mod error;
+mod format_changeset;
+
 use criner_waste_report::{CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile};
 pub use error::Error;
+use format_changeset::format_changeset;
 use std::path::Path;
 use std::{
     fs,
@@ -195,14 +198,24 @@ fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
 fn write_manifest(
     manifest_path: std::path::PathBuf,
     document: toml_edit::Document,
-    dry_run: bool,
+    original_content_on_dry_run: Option<String>,
     mut output: impl std::io::Write,
 ) -> Result<()> {
-    if !dry_run {
-        std::fs::write(manifest_path, document.to_string_in_original_order())?;
-    } else {
-        writeln!(output, "todo: difference printing")?;
-    }
+    let edit = document.to_string_in_original_order();
+    match original_content_on_dry_run {
+        None => std::fs::write(manifest_path, edit)?,
+        Some(original_content) => {
+            if original_content == edit {
+                writeln!(output, "There would be no change.")?;
+            } else {
+                writeln!(output, "WOULD apply the following change:")?;
+                format_changeset(
+                    output,
+                    &difference::Changeset::new(&original_content, &edit, ""),
+                )?
+            }
+        }
+    };
     Ok(())
 }
 
@@ -226,9 +239,18 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     // In dry-run mode, reset the manifest to its original state right after we obtained the package content
     // that saw the reset manifest file, i.e. one without includes or excludes
     if options.reset && options.dry_run {
-        std::fs::write(&manifest_path, cargo_manifest_original_content)?;
+        std::fs::write(&manifest_path, &cargo_manifest_original_content)?;
     }
     let document = edit(document, package, &mut output)?;
-    write_manifest(manifest_path, document, options.dry_run, output)?;
+    write_manifest(
+        manifest_path,
+        document,
+        if options.dry_run {
+            Some(cargo_manifest_original_content)
+        } else {
+            None
+        },
+        output,
+    )?;
     Ok(())
 }
