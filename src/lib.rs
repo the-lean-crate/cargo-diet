@@ -200,6 +200,7 @@ fn write_manifest(
     document: toml_edit::Document,
     original_content_on_dry_run: Option<String>,
     mut output: impl std::io::Write,
+    with_color: bool,
 ) -> Result<()> {
     let edit = document.to_string_in_original_order();
     match original_content_on_dry_run {
@@ -211,6 +212,7 @@ fn write_manifest(
                 writeln!(output, "WOULD apply the following change:")?;
                 format_changeset(
                     output,
+                    with_color,
                     &difference::Changeset::new(&original_content, &edit, ""),
                 )?
             }
@@ -223,6 +225,7 @@ fn write_manifest(
 pub struct Options {
     pub reset: bool,
     pub dry_run: bool,
+    pub colored_output: bool,
 }
 
 pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> {
@@ -251,6 +254,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
             None
         },
         output,
+        options.colored_output,
     )?;
     Ok(())
 }

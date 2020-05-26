@@ -4,8 +4,12 @@ use ansi_term::Style;
 use difference::{Changeset, Difference};
 
 macro_rules! paint {
-    ($f:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
-        write!($f, "{}", $colour.paint(format!($fmt, $($args)*)))
+    ($f:ident, $with_color:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
+        if $with_color {
+            write!($f, "{}", $colour.paint(format!($fmt, $($args)*)))
+        } else {
+            write!($f, "{}", format!($fmt, $($args)*))
+        }
     )
 }
 
@@ -16,16 +20,30 @@ const SIGN_LEFT: char = '<'; // - < ←
 // https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/github-style.rs
 // Credits johannhof (MIT License)
 
-pub fn format_changeset(mut f: impl std::io::Write, changeset: &Changeset) -> std::io::Result<()> {
+pub fn format_changeset(
+    mut f: impl std::io::Write,
+    use_color: bool,
+    changeset: &Changeset,
+) -> std::io::Result<()> {
     let ref diffs = changeset.diffs;
 
-    writeln!(
-        f,
-        "{} {} / {} :",
-        Style::new().bold().paint("Diff"),
-        Red.paint(format!("{} left", SIGN_LEFT)),
-        Green.paint(format!("right {}", SIGN_RIGHT))
-    )?;
+    if use_color {
+        writeln!(
+            f,
+            "{} {} / {} :",
+            Style::new().bold().paint("Diff"),
+            Red.paint(format!("{} left", SIGN_LEFT)),
+            Green.paint(format!("right {}", SIGN_RIGHT))
+        )?;
+    } else {
+        writeln!(
+            f,
+            "{} {} / {} :",
+            "Diff",
+            format!("{} left", SIGN_LEFT),
+            format!("right {}", SIGN_RIGHT)
+        )?;
+    }
     for i in 0..diffs.len() {
         match diffs[i] {
             Difference::Same(ref same) => {
@@ -43,11 +61,11 @@ pub fn format_changeset(mut f: impl std::io::Write, changeset: &Changeset) -> st
                         //
                         // Let's highlight the character-differences in this replaced
                         // chunk. Note that this chunk can span over multiple lines.
-                        format_replacement(&mut f, added, removed)?;
+                        format_replacement(&mut f, use_color, added, removed)?;
                     }
                     _ => {
                         for line in added.split('\n') {
-                            paint!(f, Green, "{}{}\n", SIGN_RIGHT, line)?;
+                            paint!(f, use_color, Green, "{}{}\n", SIGN_RIGHT, line)?;
                         }
                     }
                 };
@@ -62,7 +80,7 @@ pub fn format_changeset(mut f: impl std::io::Write, changeset: &Changeset) -> st
                     }
                     _ => {
                         for line in removed.split('\n') {
-                            paint!(f, Red, "{}{}\n", SIGN_LEFT, line)?;
+                            paint!(f, use_color, Red, "{}{}\n", SIGN_LEFT, line)?;
                         }
                     }
                 }
@@ -95,29 +113,30 @@ macro_rules! join {
 
 fn format_replacement(
     f: &mut dyn std::io::Write,
+    use_color: bool,
     added: &str,
     removed: &str,
 ) -> std::io::Result<()> {
     let Changeset { diffs, .. } = Changeset::new(removed, added, "");
 
     // LEFT side (==what's been)
-    paint!(f, Red, "{}", SIGN_LEFT)?;
+    paint!(f, use_color, Red, "{}", SIGN_LEFT)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Red, "{}", chunk)?;
+                    paint!(f, use_color, Red, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Red, "{}", SIGN_LEFT)?;
+                    paint!(f, use_color, Red, "{}", SIGN_LEFT)?;
                 });
             }
             Difference::Rem(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Red.on(Fixed(52)).bold(), "{}", chunk)?;
+                    paint!(f, use_color, Red.on(Fixed(52)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Red.bold(), "{}", SIGN_LEFT)?;
+                    paint!(f, use_color, Red.bold(), "{}", SIGN_LEFT)?;
                 });
             }
             _ => (),
@@ -126,23 +145,23 @@ fn format_replacement(
     writeln!(f, "")?;
 
     // RIGHT side (==what's new)
-    paint!(f, Green, "{}", SIGN_RIGHT)?;
+    paint!(f, use_color, Green, "{}", SIGN_RIGHT)?;
     for c in &diffs {
         match *c {
             Difference::Same(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Green, "{}", chunk)?;
+                    paint!(f, use_color, Green, "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Green, "{}", SIGN_RIGHT)?;
+                    paint!(f, use_color, Green, "{}", SIGN_RIGHT)?;
                 });
             }
             Difference::Add(ref word_diff) => {
                 join!(chunk in (word_diff.split('\n')) {
-                    paint!(f, Green.on(Fixed(22)).bold(), "{}", chunk)?;
+                    paint!(f, use_color, Green.on(Fixed(22)).bold(), "{}", chunk)?;
                 } seperated by {
                     writeln!(f)?;
-                    paint!(f, Green.bold(), "{}", SIGN_RIGHT)?;
+                    paint!(f, use_color, Green.bold(), "{}", SIGN_RIGHT)?;
                 });
             }
             _ => (),
