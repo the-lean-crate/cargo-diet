@@ -209,7 +209,8 @@ fn write_manifest(
             if original_content == edit {
                 writeln!(output, "There would be no change.")?;
             } else {
-                writeln!(output, "WOULD apply the following change:")?;
+                writeln!(output)?;
+                writeln!(output, "The following change WOULD be made to Cargo.toml:")?;
                 format_changeset(
                     output,
                     with_color,

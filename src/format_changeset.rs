@@ -112,7 +112,9 @@ pub fn format_changeset(
         )?;
     }
 
-    if let (Some(first_changed_hunk), Some(last_changed_hunk)) = (first_changed_hunk, last_changed_hunk) {
+    if let (Some(first_changed_hunk), Some(last_changed_hunk)) =
+        (first_changed_hunk, last_changed_hunk)
+    {
         for i in first_changed_hunk..=last_changed_hunk {
             match &diffs[i] {
                 Difference::Same(x) => {
