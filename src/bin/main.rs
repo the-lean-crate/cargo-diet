@@ -33,6 +33,9 @@ use args::{Args, Command};
 
 fn main() -> anyhow::Result<()> {
     let Command::Diet(Args { reset, dry_run }) = Command::from_args();
-    cargo_diet::execute(cargo_diet::Options { reset, dry_run })?;
+    cargo_diet::execute(
+        cargo_diet::Options { reset, dry_run },
+        std::io::stdout().lock(),
+    )?;
     Ok(())
 }

@@ -36,7 +36,11 @@ fn report_savings(
     Ok(())
 }
 
-fn edit(mut doc: toml_edit::Document, package: TarPackage) -> Result<toml_edit::Document> {
+fn edit(
+    mut doc: toml_edit::Document,
+    package: TarPackage,
+    output: impl std::io::Write,
+) -> Result<toml_edit::Document> {
     let report = Report::from_package(
         "crate-name does not matter",
         "crate version does not matter",
@@ -45,7 +49,7 @@ fn edit(mut doc: toml_edit::Document, package: TarPackage) -> Result<toml_edit::
     match report {
         Report::Version { total_size_in_bytes, wasted_files, suggested_fix, ..} => {
             if let Some(fix) = suggested_fix {
-                report_savings(total_size_in_bytes, wasted_files, std::io::stdout()).ok();
+                report_savings(total_size_in_bytes, wasted_files, output).ok();
                 match fix {
                     Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
                     Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),
@@ -58,7 +62,7 @@ fn edit(mut doc: toml_edit::Document, package: TarPackage) -> Result<toml_edit::
                     }
                 };
             } else {
-                report_lean_crate(std::io::stdout()).ok();
+                report_lean_crate(output).ok();
             }
         },
         _ => unreachable!("Reports should always start out as Versions - this should probably not be necessary here"),
@@ -192,11 +196,12 @@ fn write_manifest(
     manifest_path: std::path::PathBuf,
     document: toml_edit::Document,
     dry_run: bool,
+    mut output: impl std::io::Write,
 ) -> Result<()> {
     if !dry_run {
         std::fs::write(manifest_path, document.to_string_in_original_order())?;
     } else {
-        println!("todo: difference printing");
+        writeln!(output, "todo: difference printing")?;
     }
     Ok(())
 }
@@ -207,7 +212,7 @@ pub struct Options {
     pub dry_run: bool,
 }
 
-pub fn execute(options: Options) -> Result<()> {
+pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> {
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
 
     let cargo_manifest_original_content = std::fs::read_to_string(&manifest_path)?;
@@ -223,7 +228,7 @@ pub fn execute(options: Options) -> Result<()> {
     if options.reset && options.dry_run {
         std::fs::write(&manifest_path, cargo_manifest_original_content)?;
     }
-    let document = edit(document, package)?;
-    write_manifest(manifest_path, document, options.dry_run)?;
+    let document = edit(document, package, &mut output)?;
+    write_manifest(manifest_path, document, options.dry_run, output)?;
     Ok(())
 }
