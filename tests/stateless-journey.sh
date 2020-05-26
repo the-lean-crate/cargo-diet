@@ -76,10 +76,10 @@ function remove_paths() {
       (with "a new test file which is part of the src/ directory"
         touch src/lib_test.rs
 
-        (with "the --dry-run flag set"
+        (with "the -n (dry-run) flag set"
           it "runs successfully and prints diff information" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-dry-run" \
-            expect_run ${SUCCESSFULLY} "$exe" diet --dry-run
+            expect_run ${SUCCESSFULLY} "$exe" diet -n
           }
 
           it "does not alter Cargo.toml" && {
@@ -115,14 +115,27 @@ function remove_paths() {
         )
 
         (when "running it and the --reset flag is set" &&
-          it "runs successfully" && {
-            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
-            expect_run ${SUCCESSFULLY} "$exe" diet --reset
-          }
+          (with "the --dry-run flag set"
+            it "runs successfully" && {
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-reset-dry-run" \
+              expect_run ${SUCCESSFULLY} "$exe" diet --reset --dry-run
+            }
 
-          it "produces a new include that includes the new file." && {
-            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
-          }
+            it "produces does not alter the Cargo.toml file" && {
+              expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded" "Cargo.toml"
+            }
+          )
+
+          (with "NO --dry-run flag set"
+            it "runs successfully" && {
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
+              expect_run ${SUCCESSFULLY} "$exe" diet --reset
+            }
+
+            it "produces a new include that includes the new file." && {
+              expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
+            }
+          )
         )
 
         (when "running it again without --reset flag" &&
