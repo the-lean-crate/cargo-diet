@@ -40,14 +40,27 @@ function remove_paths() {
       step "init cargo project" &&
         expect_run ${SUCCESSFULLY} cargo init --name library --bin
 
-      it "runs successfully and states the crate is lean" && {
-        WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
-        expect_run ${SUCCESSFULLY} "$exe" diet
-      }
+      (with "the --dry-run flag set"
+        it "runs successfully and states the crate is lean" && {
+          WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-dry-run" \
+          expect_run ${SUCCESSFULLY} "$exe" diet --dry-run
+        }
 
-      it "does not modify the Cargo.toml file" && {
-        expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
-      }
+        it "does not modify the Cargo.toml file" && {
+          expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
+        }
+      )
+
+      (with "NO --dry-run flag set"
+        it "runs successfully and states the crate is lean" && {
+          WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
+          expect_run ${SUCCESSFULLY} "$exe" diet
+        }
+
+        it "does not modify the Cargo.toml file" && {
+          expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
+        }
+      )
 
       (when "running it again" &&
         it "runs successfully" && {
