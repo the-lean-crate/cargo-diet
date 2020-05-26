@@ -40,12 +40,12 @@ function remove_paths() {
       step "init cargo project" &&
         expect_run ${SUCCESSFULLY} cargo init --name library --bin
 
-      it "runs successfully" && {
+      it "runs successfully and states the crate is lean" && {
         WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
         expect_run ${SUCCESSFULLY} "$exe" diet
       }
 
-      it "modifies Cargo.toml to contain an include directive" && {
+      it "does not modify the Cargo.toml file" && {
         expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
       }
 
@@ -63,21 +63,34 @@ function remove_paths() {
       (with "a new test file which is part of the src/ directory"
         touch src/lib_test.rs
 
-        (when "running it again" &&
-          it "runs successfully" && {
-            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
-            expect_run ${SUCCESSFULLY} "$exe" diet
+        (with "the --dry-run flag set"
+          it "runs successfully and prints diff information" && {
+            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-dry-run" \
+            expect_run ${SUCCESSFULLY} "$exe" diet --dry-run
           }
 
-          it "produces a new include directive which explicilty excludes the new file type" && {
-            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded" "Cargo.toml"
+          it "does not alter Cargo.toml" && {
+            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-dry-run" "Cargo.toml"
           }
+        )
+
+        (with "NO --dry-run flag set"
+          (when "running it again"
+            it "runs successfully and states the changes" && {
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
+              expect_run ${SUCCESSFULLY} "$exe" diet
+            }
+
+            it "produces a new include directive which explicitly excludes the new file type" && {
+              expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded" "Cargo.toml"
+            }
+          )
         )
       )
       (with "a new README file in the project root"
         touch README.md
 
-        (when "running it again" &&
+        (when "running it" &&
           it "runs successfully" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
             expect_run ${SUCCESSFULLY} "$exe" diet
@@ -88,13 +101,24 @@ function remove_paths() {
           }
         )
 
-        (when "running it again and the --reset flag set" &&
+        (when "running it and the --reset flag is set" &&
           it "runs successfully" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
             expect_run ${SUCCESSFULLY} "$exe" diet --reset
           }
 
           it "produces a new include that includes the new file." && {
+            expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
+          }
+        )
+
+        (when "running it again without --reset flag" &&
+          it "runs successfully" && {
+            WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
+            expect_run ${SUCCESSFULLY} "$exe" diet
+          }
+
+          it "produces does not alter the cargo manifest" && {
             expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
           }
         )

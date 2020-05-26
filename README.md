@@ -2,7 +2,7 @@
 
 ### Tasks
 
-* [ ] reset - clear existing include or exclude, useful if new files are added to repo that should
+* [x] reset - clear existing include or exclude, useful if new files are added to repo that should
       be considered
 * [ ] dry-run mode
 * [ ] A nicer way to print results

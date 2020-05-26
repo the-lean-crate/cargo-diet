@@ -188,22 +188,42 @@ fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
     package.remove("include");
 }
 
+fn write_manifest(
+    manifest_path: std::path::PathBuf,
+    document: toml_edit::Document,
+    dry_run: bool,
+) -> Result<()> {
+    if !dry_run {
+        std::fs::write(manifest_path, document.to_string_in_original_order())?;
+    } else {
+        println!("todo: difference printing");
+    }
+    Ok(())
+}
+
 #[derive(Debug, Default)]
 pub struct Options {
     pub reset: bool,
+    pub dry_run: bool,
 }
 
 pub fn execute(options: Options) -> Result<()> {
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
 
-    let mut document = toml_edit::Document::from_str(&std::fs::read_to_string(&manifest_path)?)?;
+    let cargo_manifest_original_content = std::fs::read_to_string(&manifest_path)?;
+    let mut document = toml_edit::Document::from_str(&cargo_manifest_original_content)?;
+
     if options.reset {
         clear_includes_and_excludes(&mut document);
         std::fs::write(&manifest_path, document.to_string_in_original_order())?;
     }
-
     let package = cargo_package_content()?;
+    // In dry-run mode, reset the manifest to its original state right after we obtained the package content
+    // that saw the reset manifest file, i.e. one without includes or excludes
+    if options.reset && options.dry_run {
+        std::fs::write(&manifest_path, cargo_manifest_original_content)?;
+    }
     let document = edit(document, package)?;
-    std::fs::write(manifest_path, document.to_string_in_original_order())?;
+    write_manifest(manifest_path, document, options.dry_run)?;
     Ok(())
 }

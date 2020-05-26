@@ -17,18 +17,22 @@ mod args {
 
     #[derive(Debug, StructOpt)]
     pub struct Args {
-        #[structopt(
-            long,
-            short = "r",
-            help = "If set, existing includes and excludes will be removed prior to running the command.\
-        That way, new files outside of any included directory will be picked up."
-        )]
+        #[structopt(long, short = "r")]
+        /// If set, existing includes and excludes will be removed prior to running the command.
+        ///
+        /// That way, new files outside of any included directory will be picked up."
         pub reset: bool,
+
+        #[structopt(long, short = "n")]
+        /// If set, no change will actually be made to the Cargo.toml file, simulating what would be done instead.
+        pub dry_run: bool,
     }
 }
 
+use args::{Args, Command};
+
 fn main() -> anyhow::Result<()> {
-    let args::Command::Diet(args) = args::Command::from_args();
-    cargo_diet::execute(cargo_diet::Options { reset: args.reset })?;
+    let Command::Diet(Args { reset, dry_run }) = Command::from_args();
+    cargo_diet::execute(cargo_diet::Options { reset, dry_run })?;
     Ok(())
 }
