@@ -84,13 +84,13 @@ pub fn format_changeset(
         }
     };
 
-    let first_change = diffs.iter().position(is_different);
-    let last_change = diffs.iter().rposition(is_different);
+    let first_changed_hunk = diffs.iter().position(is_different);
+    let last_changed_hunk = diffs.iter().rposition(is_different);
     let context = 2;
     {
-        let one_before_change = first_change.and_then(|l| l.checked_sub(1));
+        let hunk_before_first_change = first_changed_hunk.and_then(|l| l.checked_sub(1));
         print_context(
-            one_before_change.map(|l| {
+            hunk_before_first_change.map(|l| {
                 let iter = lines_of(&diffs[l]);
                 let lines_outside_of_context = diffs.len().saturating_sub(
                     iter.size_hint()
@@ -112,8 +112,8 @@ pub fn format_changeset(
         )?;
     }
 
-    if let (Some(first_change), Some(last_change)) = (first_change, last_change) {
-        for i in first_change..=last_change {
+    if let (Some(first_changed_hunk), Some(last_changed_hunk)) = (first_changed_hunk, last_changed_hunk) {
+        for i in first_changed_hunk..=last_changed_hunk {
             match &diffs[i] {
                 Difference::Same(x) => {
                     writeln!(t, " {}", x)?;
@@ -129,9 +129,9 @@ pub fn format_changeset(
     }
 
     {
-        let one_after_last_change = last_change.map(|l| (l + 1).min(diffs.len()));
+        let hunk_after_last_change = last_changed_hunk.map(|l| (l + 1).min(diffs.len()));
         print_context(
-            one_after_last_change.map(|l| {
+            hunk_after_last_change.map(|l| {
                 let iter = lines_of(&diffs[l]);
                 let skipped_lines_note = iter
                     .size_hint()
