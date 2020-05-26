@@ -2,9 +2,9 @@ We saved you 263 B in 1 files
 src/lib_test.rs
 WOULD apply the following change:
 Diff - removed / added + :
-[…skipped 3 lines…]
-authors = ["author <author@example.com>"]
+[…skipped 4 lines…]
 edition = "2018"
-+include = ["src/**/*", "!**/*_test.*"]
+-include = ["src/**/*", "!**/*_test.*"]
++include = ["src/**/*", "README.md", "!**/*_test.*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
