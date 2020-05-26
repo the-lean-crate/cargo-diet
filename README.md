@@ -6,5 +6,6 @@
       be considered
 * [x] dry-run mode
 * [x] A nicer way to print results
+* [ ] documentation and release-prep
 
 
