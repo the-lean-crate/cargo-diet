@@ -4,7 +4,6 @@ version = "1.0.0"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 publish = false
 edition = "2018"
-include = ["src/**/*", "LICENSE.md", "README.md"]
 
 [dependencies]
 structopt = "0.3.14"
