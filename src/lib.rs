@@ -235,10 +235,20 @@ fn write_manifest(
         None => std::fs::write(manifest_path, edit)?,
         Some(original_content) => {
             if original_content == edit {
-                writeln!(output, "There would be no change.")?;
+                paint!(
+                    output,
+                    with_color,
+                    ansi_term::Style::new().dimmed(),
+                    "There would be no change.\n",
+                );
             } else {
                 writeln!(output)?;
-                writeln!(output, "The following change WOULD be made to Cargo.toml:")?;
+                paint!(
+                    output,
+                    with_color,
+                    ansi_term::Style::new().dimmed(),
+                    "The following change WOULD be made to Cargo.toml:\n",
+                );
                 format_changeset(
                     output,
                     with_color,

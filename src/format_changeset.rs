@@ -6,6 +6,7 @@ use ansi_term::Colour::{Green, Red};
 use ansi_term::Style;
 use difference::{Changeset, Difference};
 
+#[macro_export]
 macro_rules! paint {
     ($f:ident, $with_color:ident, $colour:expr, $fmt:expr, $($args:tt)*) => (
         if $with_color {
@@ -33,18 +34,19 @@ fn print_context<'a>(
         Option<String>,
     )>,
     f: &mut impl std::io::Write,
+    use_color: bool,
 ) -> std::io::Result<()> {
     match lines {
         None => {}
         Some((before, lines, after)) => {
             if let Some(before) = before {
-                writeln!(f, "{}", before)?;
+                paint!(f, use_color, Style::new().dimmed(), "{}\n", before,);
             }
             for line in lines {
                 writeln!(f, "{}", line)?;
             }
             if let Some(after) = after {
-                writeln!(f, "{}", after)?;
+                paint!(f, use_color, Style::new().dimmed(), "{}\n", after,);
             }
         }
     };
@@ -104,6 +106,7 @@ pub fn format_changeset(
                 )
             }),
             &mut t,
+            use_color,
         )?;
     }
 
@@ -136,6 +139,7 @@ pub fn format_changeset(
                 (None, lines_of(&diffs[l]).take(context), skipped_lines_note)
             }),
             &mut t,
+            use_color,
         )?;
     }
     Ok(())
