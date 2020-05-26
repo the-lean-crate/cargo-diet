@@ -1,7 +1,0 @@
-error: The following required arguments were not provided:
-    <input>
-
-USAGE:
-    cargo-diet <input> --speed <speed>
-
-For more information try --help

@@ -128,7 +128,7 @@ function remove_paths() {
 
           (with "NO --dry-run flag set"
             it "runs successfully" && {
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added" \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-no-dryrun" \
               expect_run ${SUCCESSFULLY} "$exe" diet --reset
             }
 

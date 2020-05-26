@@ -24,6 +24,8 @@ fn report_lean_crate(mut out: impl std::io::Write) -> std::io::Result<()> {
 }
 
 fn report_savings(
+    total_size_in_bytes: u64,
+    total_files: u64,
     mut wasted_files: Vec<WastedFile>,
     mut out: impl std::io::Write,
 ) -> std::io::Result<()> {
@@ -67,9 +69,12 @@ fn report_savings(
     ascii_table.print(data);
     writeln!(
         out,
-        "Saved {} in {} files",
+        "Saved {:.0}% or {} in {} files (of {} and {} files in entire crate)",
+        (wasted_bytes as f32 / total_size_in_bytes as f32) * 100.0,
         ByteSize(wasted_bytes),
-        wasted_files.len()
+        wasted_files.len(),
+        ByteSize(total_size_in_bytes),
+        total_files
     )?;
     Ok(())
 }
@@ -85,9 +90,9 @@ fn edit(
         package,
     );
     match report {
-        Report::Version { wasted_files, suggested_fix, ..} => {
+        Report::Version { total_size_in_bytes, total_files, wasted_files, suggested_fix, .. } => {
             if let Some(fix) = suggested_fix {
-                report_savings(wasted_files, output).ok();
+                report_savings(total_size_in_bytes, total_files, wasted_files, output).ok();
                 match fix {
                     Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
                     Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),
