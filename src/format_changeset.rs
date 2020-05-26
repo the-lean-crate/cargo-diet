@@ -53,16 +53,16 @@ pub fn format_changeset(
             t,
             "{} {} / {} :",
             Style::new().bold().paint("Diff"),
-            Red.paint(format!("{} left", SIGN_LEFT)),
-            Green.paint(format!("right {}", SIGN_RIGHT))
+            Red.paint(format!("{} removed", SIGN_LEFT)),
+            Green.paint(format!("added {}", SIGN_RIGHT))
         )?;
     } else {
         writeln!(
             t,
             "{} {} / {} :",
             "Diff",
-            format!("{} left", SIGN_LEFT),
-            format!("right {}", SIGN_RIGHT)
+            format!("{} removed", SIGN_LEFT),
+            format!("added {}", SIGN_RIGHT)
         )?;
     }
 
@@ -79,10 +79,18 @@ pub fn format_changeset(
     let context = 2;
 
     {
-        let one_before_change = first_change.map(|l| l.saturating_sub(1));
+        let one_before_change = first_change.and_then(|l| l.checked_sub(1));
         print_context(
-            one_before_change
-                .map(|l| lines_of(&diffs[l]).skip(diffs.len().saturating_sub(context))),
+            one_before_change.map(|l| {
+                let iter = lines_of(&diffs[l]);
+                let lines_outside_of_context = diffs.len().saturating_sub(
+                    iter.size_hint()
+                        .1
+                        .map(|upper| upper.saturating_sub(context))
+                        .unwrap_or(0),
+                );
+                iter.skip(lines_outside_of_context)
+            }),
             &mut t,
         )?;
     }
