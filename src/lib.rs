@@ -24,10 +24,16 @@ fn report_lean_crate(mut out: impl std::io::Write) -> std::io::Result<()> {
 }
 
 fn report_savings(
-    total_size_in_bytes: u64,
     mut wasted_files: Vec<WastedFile>,
     mut out: impl std::io::Write,
 ) -> std::io::Result<()> {
+    if wasted_files.is_empty() {
+        writeln!(
+            out,
+            "Include or exclude directives were optimized, without affecting the crate's size."
+        )?;
+        return Ok(());
+    }
     use ascii_table::{Align, AsciiTable, Column};
     use std::fmt::Display;
 
@@ -53,6 +59,7 @@ fn report_savings(
     );
 
     wasted_files.sort_by(|x, y| x.1.cmp(&y.1));
+    let wasted_bytes: u64 = wasted_files.iter().map(|(_, size)| size).sum();
     let data: Vec<Vec<&dyn Display>> = wasted_files
         .iter()
         .map(|(path, size)| vec![path as &dyn Display, size as &dyn Display])
@@ -61,7 +68,7 @@ fn report_savings(
     writeln!(
         out,
         "Saved {} in {} files",
-        ByteSize(total_size_in_bytes),
+        ByteSize(wasted_bytes),
         wasted_files.len()
     )?;
     Ok(())
@@ -78,9 +85,9 @@ fn edit(
         package,
     );
     match report {
-        Report::Version { total_size_in_bytes, wasted_files, suggested_fix, ..} => {
+        Report::Version { wasted_files, suggested_fix, ..} => {
             if let Some(fix) = suggested_fix {
-                report_savings(total_size_in_bytes, wasted_files, output).ok();
+                report_savings(wasted_files, output).ok();
                 match fix {
                     Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
                     Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),

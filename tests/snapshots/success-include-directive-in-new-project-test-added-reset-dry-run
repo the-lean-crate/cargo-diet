@@ -3,7 +3,7 @@
 ├─────────────────┼─────────────┤
 │ src/lib_test.rs │           0 │
 └─────────────────┴─────────────┘
-Saved 263 B in 1 files
+Saved 0 B in 1 files
 
 The following change WOULD be made to Cargo.toml:
 Diff - removed / added + :
