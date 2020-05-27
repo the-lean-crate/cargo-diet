@@ -41,6 +41,14 @@ cargo install cargo-diet
 
 Pre-built binaries can be found in the [releases](https://github.com/the-lean-crate/cargo-diet/releases) section of this repository.
 
+You can use an [installation script][install.sh] to automate this process:
+
+```bash 
+curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
+    sh -s -- --git the-lean-crate/cargo-diet
+```
+
+[install.sh]: https://github.com/the-lean-crate/cargo-diet/blob/master/ci/install.sh
 
 ### Development
 
