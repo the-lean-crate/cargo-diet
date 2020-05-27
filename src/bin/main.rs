@@ -18,10 +18,10 @@ mod args {
     #[derive(Debug, StructOpt)]
     pub struct Args {
         #[structopt(long, short = "r")]
-        /// If set, existing includes and excludes will be removed prior to running the command.
+        /// If set, existing include and exclude directives will be removed prior to running the command.
         ///
         /// That way, new files outside of any included directory will be picked up."
-        pub reset: bool,
+        pub reset_manifest: bool,
 
         #[structopt(long, short = "n")]
         /// If set, no change will actually be made to the Cargo.toml file, simulating what would be done instead.
@@ -32,7 +32,10 @@ mod args {
 use args::{Args, Command};
 
 fn main() -> anyhow::Result<()> {
-    let Command::Diet(Args { reset, dry_run }) = Command::from_args();
+    let Command::Diet(Args {
+        reset_manifest: reset,
+        dry_run,
+    }) = Command::from_args();
     cargo_diet::execute(
         cargo_diet::Options {
             reset,

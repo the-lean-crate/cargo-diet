@@ -10,3 +10,15 @@ interfering with you on subsequent invocations.
 [![asciicast](https://asciinema.org/a/UKhYox6XXwWgnVSVWm5PIdUf5.svg)](https://asciinema.org/a/UKhYox6XXwWgnVSVWm5PIdUf5)
 
 [lean-crate-initiative]: https://github.com/the-lean-crate/criner
+
+### Usage
+
+* **make the crate lean by editing the `Cargo.toml` file in place**
+  * `cargo diet`
+  
+* **simulate how the `Cargo.toml` file would be edited to obtain a lean crate**
+  * `cargo diet -n`  or `cargo diet --dry-run`
+  
+* **force computing an `include` directive even though one exists already**
+  * `cargo diet -r` or `cargo diet --reset-manifest`
+  * can also be used with `--dry-run` such as in `cargo diet --reset-manifest --dry-run` or `cargo diet -rn`

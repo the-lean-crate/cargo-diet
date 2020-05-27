@@ -114,11 +114,11 @@ function remove_paths() {
           }
         )
 
-        (when "running it and the --reset flag is set" &&
+        (when "running it and the --reset-manifest flag is set" &&
           (with "the --dry-run flag set"
             it "runs successfully" && {
               WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-reset-dry-run" \
-              expect_run ${SUCCESSFULLY} "$exe" diet --reset --dry-run
+              expect_run ${SUCCESSFULLY} "$exe" diet --reset-manifest --dry-run
             }
 
             it "produces does not alter the Cargo.toml file" && {
@@ -129,7 +129,7 @@ function remove_paths() {
           (with "NO --dry-run flag set"
             it "runs successfully" && {
               WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-no-dryrun" \
-              expect_run ${SUCCESSFULLY} "$exe" diet --reset
+              expect_run ${SUCCESSFULLY} "$exe" diet -r
             }
 
             it "produces a new include that includes the new file." && {
@@ -138,7 +138,7 @@ function remove_paths() {
           )
         )
 
-        (when "running it again without --reset flag" &&
+        (when "running it again without --reset-manifest flag" &&
           it "runs successfully" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
             expect_run ${SUCCESSFULLY} "$exe" diet
