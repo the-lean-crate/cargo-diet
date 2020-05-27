@@ -238,36 +238,45 @@ fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
 fn write_manifest(
     manifest_path: std::path::PathBuf,
     document: toml_edit::Document,
-    original_content_on_dry_run: Option<String>,
+    original_manifest_content: String,
+    dry_run: bool,
     mut output: impl std::io::Write,
     with_color: bool,
 ) -> Result<()> {
     let edit = document.to_string_in_original_order();
-    match original_content_on_dry_run {
-        None => std::fs::write(manifest_path, edit)?,
-        Some(original_content) => {
-            if original_content == edit {
-                paint!(
-                    output,
-                    with_color,
-                    ansi_term::Style::new().dimmed(),
-                    "There would be no change.\n",
-                );
+    if !dry_run {
+        std::fs::write(manifest_path, &edit)?;
+    }
+    if original_manifest_content == edit {
+        paint!(
+            output,
+            with_color,
+            ansi_term::Style::new().dimmed(),
+            "{}\n",
+            if dry_run {
+                "There would be no change."
             } else {
-                writeln!(output)?;
-                paint!(
-                    output,
-                    with_color,
-                    ansi_term::Style::new().dimmed(),
-                    "The following change WOULD be made to Cargo.toml:\n",
-                );
-                format_changeset(
-                    output,
-                    with_color,
-                    &difference::Changeset::new(&original_content, &edit, "\n"),
-                )?
+                "Nothing changed."
             }
-        }
+        );
+    } else {
+        writeln!(output)?;
+        paint!(
+            output,
+            with_color,
+            ansi_term::Style::new().dimmed(),
+            "{}\n",
+            if dry_run {
+                "The following change WOULD be made to Cargo.toml:"
+            } else {
+                "The following change was made to Cargo.toml:"
+            }
+        );
+        format_changeset(
+            output,
+            with_color,
+            &difference::Changeset::new(&original_manifest_content, &edit, "\n"),
+        )?
     };
     Ok(())
 }
@@ -299,11 +308,8 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     write_manifest(
         manifest_path,
         document,
-        if options.dry_run {
-            Some(cargo_manifest_original_content)
-        } else {
-            None
-        },
+        cargo_manifest_original_content,
+        options.dry_run,
         output,
         options.colored_output,
     )?;
