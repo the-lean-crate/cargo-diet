@@ -2,9 +2,23 @@
 name = "cargo-diet"
 version = "1.0.0"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
-publish = false
 edition = "2018"
+repository = "https://github.com/the-lean-crate/cargo-diet"
 include = ["src/**/*", "LICENSE.md", "README.md"]
+license = "MIT"
+readme = "README.md"
+description = "Make your crate lean by computing size-optimal include directives for Cargo manifests"
+categories = [
+    "development-tools",
+    "development-tools::cargo-plugins",
+]
+keywords = [
+    "cargo",
+    "cargo-subcommand",
+    "cli",
+    "lean",
+    "crates",
+]
 
 [dependencies]
 structopt = "0.3.14"
