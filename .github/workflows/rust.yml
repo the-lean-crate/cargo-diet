@@ -15,8 +15,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run tests
       run: make journey-tests
-    - name: Run tests
-      run: cargo run -- diet --dry-run --package-size-limit 40KB
+    - name: Check crate package size
+      run: cargo run -- diet --dry-run --package-size-limit 10KB
     - name: fmt
       run: cargo fmt --all -- --check
     - name: clippy
