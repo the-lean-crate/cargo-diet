@@ -126,7 +126,7 @@ function remove_bytecounts() {
               expect_run ${SUCCESSFULLY} "$exe" diet --reset-manifest --dry-run
             }
 
-            it "produces does not alter the Cargo.toml file" && {
+            it "does not alter the Cargo.toml file" && {
               expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded" "Cargo.toml"
             }
           )
@@ -149,23 +149,10 @@ function remove_bytecounts() {
             expect_run ${SUCCESSFULLY} "$exe" diet
           }
 
-          it "produces does not alter the cargo manifest" && {
+          it "does not alter the cargo manifest" && {
             expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
           }
         )
-        (with "the --package-size-limit flag"
-          (when "the limit is lower than the actual package size"
-            it "runs successfully" && {
-              SNAPSHOT_FILTER=remove_bytecounts \
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-exceeded" \
-              expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
-            }
-
-            it "produces does put a file in target/package" && {
-              expect_run ${WITH_FAILURE} ls target/package
-            }
-          )
-        )
 
         (with "the --package-size-limit flag"
           (when "the limit is lower than the actual package size"
@@ -175,7 +162,7 @@ function remove_bytecounts() {
               expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
             }
 
-            it "produces does put a file in target/package" && {
+            it "does not put a file in target/package" && {
               expect_run ${WITH_FAILURE} find target/package
             }
           )
@@ -186,7 +173,7 @@ function remove_bytecounts() {
               expect_run ${SUCCESSFULLY} "$exe" diet --package-size-limit 50KB
             }
 
-            it "produces does put a file in target/package" && {
+            it "does not put a file in target/package" && {
               expect_run ${WITH_FAILURE} find target/package
             }
           )
