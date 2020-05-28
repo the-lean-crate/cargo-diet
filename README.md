@@ -24,6 +24,10 @@ interfering with you on subsequent invocations.
   * `cargo diet -r` or `cargo diet --reset-manifest`
   * can also be used with `--dry-run` such as in `cargo diet --reset-manifest --dry-run` or `cargo diet -rn`
   
+* **prevent the crate from exceeding a certain package size (best on CI)**
+  * `cargo diet -n --package-size-limit 50KB`
+  * See the installation instructions specifically for CI, allowing to quickly download a pre-built binary
+  
   
 ### Installation
 
