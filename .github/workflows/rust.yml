@@ -24,6 +24,11 @@ jobs:
             sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
 
         cargo diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
+    - name: Check crate package size (with install action)
+      uses: actions-rs/install@v0.1
+      with:
+        crate: cargo-diet
+        version: latest
     - name: fmt
       run: cargo fmt --all -- --check
     - name: clippy
