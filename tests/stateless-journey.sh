@@ -176,7 +176,7 @@ function remove_bytecounts() {
             }
 
             it "produces does put a file in target/package" && {
-              expect_run ${WITH_FAILURE} ls target/package
+              expect_run ${WITH_FAILURE} find target/package
             }
           )
           (when "the limit is higher than the actual package size"
@@ -187,7 +187,7 @@ function remove_bytecounts() {
             }
 
             it "produces does put a file in target/package" && {
-              expect_run ${WITH_FAILURE} ls target/package
+              expect_run ${WITH_FAILURE} find target/package
             }
           )
         )
