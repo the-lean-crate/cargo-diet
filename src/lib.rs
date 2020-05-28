@@ -291,7 +291,12 @@ pub struct Options {
     pub package_size_limit: Option<u64>,
 }
 
-fn check_package_size(package: TarPackage, package_size_limit: u64) -> Result<()> {
+fn check_package_size(
+    package: TarPackage,
+    package_size_limit: u64,
+    mut output: impl std::io::Write,
+    with_color: bool,
+) -> Result<()> {
     struct ByteCounter(u64);
     impl std::io::Write for ByteCounter {
         fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
@@ -333,6 +338,17 @@ fn check_package_size(package: TarPackage, package_size_limit: u64) -> Result<()
             package_size_limit,
         ));
     }
+    paint!(
+        output,
+        with_color,
+        ansi_term::Colour::Green,
+        "{}\n",
+        format!(
+            "The estimated actual package size of {} is within the limit of {}.",
+            ByteSize(actual_estimated_package_size),
+            ByteSize(package_size_limit)
+        )
+    );
     Ok(())
 }
 
@@ -359,12 +375,12 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
         document,
         cargo_manifest_original_content,
         options.dry_run,
-        output,
+        &mut output,
         options.colored_output,
     )?;
 
     if let Some((package, package_size_limit)) = package_size_limit {
-        check_package_size(package, package_size_limit)?;
+        check_package_size(package, package_size_limit, output, options.colored_output)?;
     }
     Ok(())
 }

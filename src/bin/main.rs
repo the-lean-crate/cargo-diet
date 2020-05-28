@@ -32,7 +32,7 @@ mod args {
 
         #[structopt(long, parse(try_from_str = parse_size))]
         /// If set, and the estimated compressed size of the package would exceed the given size, i.e. 40KB, the command
-        /// will exit with a none-zero exit code.
+        /// will exit with a non-zero exit code.
         ///
         /// The test is performed based on data from before any change was made to the Cargo.toml file, and doesn't affect
         /// any other flags.

@@ -16,6 +16,7 @@ function remove_paths() {
     sed 's_`/.*`_<redacted>_g'
 }
 
+# This filter is required as bytecounts fluctuate due to changing meta-data/timestamps
 function remove_bytecounts() {
     sed -E 's/[0-9]+ B/<bytecount>/g'
 }
@@ -172,6 +173,17 @@ function remove_bytecounts() {
               SNAPSHOT_FILTER=remove_bytecounts \
               WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-exceeded" \
               expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
+            }
+
+            it "produces does put a file in target/package" && {
+              expect_run ${WITH_FAILURE} ls target/package
+            }
+          )
+          (when "the limit is higher than the actual package size"
+            it "runs successfully" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-not-exceeded" \
+              expect_run ${SUCCESSFULLY} "$exe" diet --package-size-limit 50KB
             }
 
             it "produces does put a file in target/package" && {
