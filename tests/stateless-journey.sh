@@ -16,6 +16,10 @@ function remove_paths() {
     sed 's_`/.*`_<redacted>_g'
 }
 
+function remove_bytecounts() {
+    sed -E 's/[0-9]+ B/<bytecount>/g'
+}
+
 (sandbox
   (with "with no cargo project"
     it "fails with an error message" && {
@@ -62,7 +66,7 @@ function remove_paths() {
         }
       )
 
-      (when "running it again" &&
+      (when "running it again"
         it "runs successfully" && {
           WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
           expect_run ${SUCCESSFULLY} "$exe" diet
@@ -103,7 +107,7 @@ function remove_paths() {
       (with "a new README file in the project root"
         touch README.md
 
-        (when "running it" &&
+        (when "running it"
           it "runs successfully" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
             expect_run ${SUCCESSFULLY} "$exe" diet
@@ -114,7 +118,7 @@ function remove_paths() {
           }
         )
 
-        (when "running it and the --reset-manifest flag is set" &&
+        (with "the --reset-manifest flag set"
           (with "the --dry-run flag set"
             it "runs successfully" && {
               WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-reset-dry-run" \
@@ -138,7 +142,7 @@ function remove_paths() {
           )
         )
 
-        (when "running it again without --reset-manifest flag" &&
+        (with "NO --reset-manifest flag"
           it "runs successfully" && {
             WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project" \
             expect_run ${SUCCESSFULLY} "$exe" diet
@@ -147,6 +151,33 @@ function remove_paths() {
           it "produces does not alter the cargo manifest" && {
             expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml-with-tests-excluded-and-readme" "Cargo.toml"
           }
+        )
+        (with "the --package-size-limit flag"
+          (when "the limit is lower than the actual package size"
+            it "runs successfully" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-exceeded" \
+              expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
+            }
+
+            it "produces does put a file in target/package" && {
+              expect_run ${WITH_FAILURE} ls target/package
+            }
+          )
+        )
+
+        (with "the --package-size-limit flag"
+          (when "the limit is lower than the actual package size"
+            it "runs successfully" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-exceeded" \
+              expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
+            }
+
+            it "produces does put a file in target/package" && {
+              expect_run ${WITH_FAILURE} ls target/package
+            }
+          )
         )
       )
     )

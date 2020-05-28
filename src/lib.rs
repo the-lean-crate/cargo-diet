@@ -7,7 +7,9 @@ mod error;
 mod format_changeset;
 
 use bytesize::ByteSize;
-use criner_waste_report::{CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile};
+use criner_waste_report::{
+    tar_path_to_utf8_str, CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile,
+};
 pub use error::Error;
 use format_changeset::format_changeset;
 use std::{
@@ -236,7 +238,7 @@ fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
 }
 
 fn write_manifest(
-    manifest_path: std::path::PathBuf,
+    manifest_path: &Path,
     document: toml_edit::Document,
     original_manifest_content: String,
     dry_run: bool,
@@ -286,6 +288,52 @@ pub struct Options {
     pub reset: bool,
     pub dry_run: bool,
     pub colored_output: bool,
+    pub package_size_limit: Option<u64>,
+}
+
+fn check_package_size(package: TarPackage, package_size_limit: u64) -> Result<()> {
+    struct ByteCounter(u64);
+    impl std::io::Write for ByteCounter {
+        fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+            self.0 += buf.len() as u64;
+            Ok(buf.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    };
+
+    let actual_estimated_package_size = {
+        let byte_counter = ByteCounter(0);
+        let mut builder = tar::Builder::new(
+            flate2::GzBuilder::new().write(byte_counter, flate2::Compression::best()),
+        );
+        // NOTE: we are not taking generated files into consideration, but assume the space required for them is negligble
+        // The reason we do things in memory is to avoid having side-effects, like dropping files to disk by invoking `cargo package` directly.
+        let base = std::path::PathBuf::from("cratename-v0.1.0");
+        for entry in package.entries_meta_data.into_iter() {
+            let mut header = tar::Header::new_ustar();
+            let path_without_root = tar_path_to_utf8_str(&entry.path);
+            header.set_path(&base.join(path_without_root))?;
+
+            let mut file = std::fs::File::open(path_without_root)?;
+            let metadata = file.metadata()?;
+            header.set_metadata(&metadata);
+            header.set_cksum();
+            builder.append(&header, &mut file)?;
+        }
+        let encoder = builder.into_inner()?;
+        encoder.finish()?.0
+    };
+
+    if actual_estimated_package_size > package_size_limit {
+        return Err(Error::PackageSizeLimitExceeded(
+            actual_estimated_package_size,
+            package_size_limit,
+        ));
+    }
+    Ok(())
 }
 
 pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> {
@@ -299,6 +347,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
         std::fs::write(&manifest_path, document.to_string_in_original_order())?;
     }
     let package = cargo_package_content()?;
+    let package_size_limit = options.package_size_limit.map(|s| (package.clone(), s));
     // In dry-run mode, reset the manifest to its original state right after we obtained the package content
     // that saw the reset manifest file, i.e. one without includes or excludes
     if options.reset && options.dry_run {
@@ -306,12 +355,16 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     }
     let document = edit(document, package, &mut output)?;
     write_manifest(
-        manifest_path,
+        &manifest_path,
         document,
         cargo_manifest_original_content,
         options.dry_run,
         output,
         options.colored_output,
     )?;
+
+    if let Some((package, package_size_limit)) = package_size_limit {
+        check_package_size(package, package_size_limit)?;
+    }
     Ok(())
 }
