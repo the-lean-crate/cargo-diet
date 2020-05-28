@@ -208,7 +208,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
 }
 
 fn cargo_package_content() -> Result<TarPackage> {
-    let cargo = std::env::var("CARGO").unwrap_or("cargo".to_owned());
+    let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_owned());
     let output = std::process::Command::new(cargo)
         .arg("package")
         .arg("--no-verify")

@@ -58,7 +58,7 @@ pub fn format_changeset(
     use_color: bool,
     changeset: &Changeset,
 ) -> std::io::Result<()> {
-    let ref diffs = changeset.diffs;
+    let diffs = &changeset.diffs;
 
     if use_color {
         writeln!(
@@ -71,8 +71,7 @@ pub fn format_changeset(
     } else {
         writeln!(
             t,
-            "{} {} / {} :",
-            "Diff",
+            "Diff {} / {} :",
             format!("{} removed", SIGN_LEFT),
             format!("added {}", SIGN_RIGHT)
         )?;
@@ -113,8 +112,12 @@ pub fn format_changeset(
     if let (Some(first_changed_hunk), Some(last_changed_hunk)) =
         (first_changed_hunk, last_changed_hunk)
     {
-        for i in first_changed_hunk..=last_changed_hunk {
-            match &diffs[i] {
+        for diff in diffs
+            .iter()
+            .take(last_changed_hunk + 1)
+            .skip(first_changed_hunk)
+        {
+            match diff {
                 Difference::Same(x) => {
                     writeln!(t, " {}", x)?;
                 }
