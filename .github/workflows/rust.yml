@@ -23,7 +23,7 @@ jobs:
         curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
             sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
 
-        cargo run -- diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
+        cargo diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
     - name: fmt
       run: cargo fmt --all -- --check
     - name: clippy
