@@ -45,8 +45,24 @@ You can use an [installation script][install.sh] to automate this process:
 
 ```bash 
 curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
-    sh -s -- --git the-lean-crate/cargo-diet
+    sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
 ```
+
+#### On CI for controlling the crate package size
+
+Assuming tests are running on a linux box, the following script will install the latest version of `cargo diet`
+and run it with flags to assert a crate package size does not exceed _10KB_, a value that can freely be chosen.
+
+That way it's easy to get a warning if there are new and possibly unexpected files in one of the directories which
+are included already.
+
+```bash 
+curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
+    sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
+
+cargo diet --dry-run --package-size-limit 10KB
+```
+
 
 [install.sh]: https://github.com/the-lean-crate/cargo-diet/blob/master/ci/install.sh
 
