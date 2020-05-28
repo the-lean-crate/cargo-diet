@@ -10,13 +10,20 @@ jobs:
   build-and-test:
 
     runs-on: ubuntu-latest
-
+    env:
+      SIZE_LIMIT: 10KB
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
       run: make journey-tests
     - name: Check crate package size
-      run: cargo run -- diet --dry-run --package-size-limit 10KB
+      run: cargo run -- diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
+    - name: Check crate package size (with latest binary)
+      run: |
+        curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
+            sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
+
+        cargo run -- diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
     - name: fmt
       run: cargo fmt --all -- --check
     - name: clippy

@@ -45,7 +45,7 @@ You can use an [installation script][install.sh] to automate this process:
 
 ```bash 
 curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
-    sh -s -- --git the-lean-crate/cargo-diet --target x86_64-unknown-linux-musl
+    sh -s -- --git the-lean-crate/cargo-diet
 ```
 
 #### On CI for controlling the crate package size
