@@ -63,7 +63,9 @@ curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci
 cargo diet --dry-run --package-size-limit 10KB
 ```
 
+Also have a look at [how this is actually used][gh-action-usage] in GitHub Actions.
 
+[gh-action-usage]: https://github.com/the-lean-crate/cargo-diet/blob/e82e1037bbea6d3dc1efe20bba84d4aa678a1609/.github/workflows/rust.yml#L23-L26
 [install.sh]: https://github.com/the-lean-crate/cargo-diet/blob/master/ci/install.sh
 
 ### Development
