@@ -1,6 +1,6 @@
 [package]
 name = "cargo-diet"
-version = "1.1.0"
+version = "1.1.1"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/the-lean-crate/cargo-diet"
@@ -42,8 +42,9 @@ name="cargo-diet"
 path="src/bin/main.rs"
 
 [profile.release]
-panic = 'unwind'
+panic = 'abort'
 lto = "fat"
 codegen-units = 1
 incremental = false
 overflow-checks = true
+opt-level="z"

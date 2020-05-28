@@ -1,5 +1,9 @@
 ### What's new…
 
+#### v1.1.1
+
+* Reduce file-size of produced binaries
+
 #### v1.1.0
 
 * Add the --package-size-limit flag to allow exiting with a non-zero code if the estimated
