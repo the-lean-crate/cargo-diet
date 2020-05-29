@@ -3,6 +3,7 @@
 #### v1.1.2 - Bugfixes
 
 * Fix [off-by-one error](https://github.com/the-lean-crate/cargo-diet/issues/1) when printing the diff
+* Improve [error output](https://github.com/the-lean-crate/cargo-diet/issues/2) when `cargo package` fails
 
 #### v1.1.1
 
