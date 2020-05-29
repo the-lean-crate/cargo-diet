@@ -1,0 +1,8 @@
+Error: error: failed to parse manifest at <redacted>
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+
+To try fixing this, run 'cargo package' by hand before running 'cargo diet' again.

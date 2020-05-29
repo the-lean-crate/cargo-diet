@@ -23,16 +23,6 @@ function remove_bytecounts() {
 }
 
 
-(in-clone-of https://github.com/artichoke/artichoke
-  stepn "reproduce https://github.com/the-lean-crate/cargo-diet/issues/2"
-  (when "cargo diet in dry-run mode"
-    it "fails to run but produces human readable error messages" && {
-      WITH_SNAPSHOT="$snapshot/failure-with-human-readable-package-related-error" \
-      expect_run ${WITH_FAILURE} "$exe" diet -n
-    }
-  )
-)
-
 (in-clone-of https://github.com/greshake/i3status-rust
   stepn "reproduce https://github.com/the-lean-crate/cargo-diet/issues/1"
   (when "cargo diet in dry-run mode"
@@ -55,6 +45,14 @@ function remove_bytecounts() {
     it "fails with a human readable error message" && {
       SNAPSHOT_FILTER=remove_paths \
       WITH_SNAPSHOT="$snapshot/failure-invalid-cargo-manifest" \
+      expect_run ${WITH_FAILURE} "$exe" diet
+    }
+  )
+  (with "with a cargo project that causes package failure"
+    cp "$root/fixtures/artichoke-cargo.toml" Cargo.toml
+    it "fails with a human readable error message" && {
+      SNAPSHOT_FILTER=remove_paths \
+      WITH_SNAPSHOT="$snapshot/failure-invalid-cargo-manifest-due-to-packaging-with-human-readable-error" \
       expect_run ${WITH_FAILURE} "$exe" diet
     }
   )

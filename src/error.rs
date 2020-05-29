@@ -9,7 +9,7 @@ quick_error! {
             display("{}", d)
         }
         CargoPackageError(msg: String) {
-            display("{}", msg)
+            display("{}\n\nTo try fixing this, run 'cargo package' by hand before running 'cargo diet' again.", msg)
         }
         TomlParse(err: toml_edit::TomlError) {
             from()
