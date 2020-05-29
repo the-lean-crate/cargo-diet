@@ -218,9 +218,11 @@ fn cargo_package_content() -> Result<TarPackage> {
         .arg("--list")
         .output()?;
     if !output.status.success() {
-        Err(LocateManifestError::CargoExecution {
-            stderr: output.stderr,
-        }
+        Err(Error::CargoPackageError(
+            std::str::from_utf8(&output.stderr)
+                .map(|s| s.to_owned())
+                .unwrap_or_else(|_| String::from_utf8_lossy(&output.stderr).to_string()),
+        )
         .into())
     } else {
         tar_package_from_paths(output.stdout)

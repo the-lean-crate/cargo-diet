@@ -8,6 +8,9 @@ quick_error! {
         Message(d: String) {
             display("{}", d)
         }
+        CargoPackageError(msg: String) {
+            display("{}", msg)
+        }
         TomlParse(err: toml_edit::TomlError) {
             from()
             cause(err)

@@ -1,0 +1,1 @@
+Error: TomlParse(TomlError { message: "TOML parse error at line 1, column 7\n  |\n1 | foobar\n  |       ^\nUnexpected `\n`\nExpected `=`\n" })

@@ -23,6 +23,16 @@ function remove_bytecounts() {
 }
 
 
+(in-clone-of https://github.com/artichoke/artichoke
+  stepn "reproduce https://github.com/the-lean-crate/cargo-diet/issues/2"
+  (when "cargo diet in dry-run mode"
+    it "fails to run but produces human readable error messages" && {
+      WITH_SNAPSHOT="$snapshot/failure-with-human-readable-package-related-error" \
+      expect_run ${WITH_FAILURE} "$exe" diet -n
+    }
+  )
+)
+
 (in-clone-of https://github.com/greshake/i3status-rust
   stepn "reproduce https://github.com/the-lean-crate/cargo-diet/issues/1"
   (when "cargo diet in dry-run mode"
@@ -40,6 +50,14 @@ function remove_bytecounts() {
       expect_run ${WITH_FAILURE} "$exe" diet
     }
   )
+  (with "with an invalid cargo project"
+    echo "foobar" > Cargo.toml
+    it "fails with a human readable error message" && {
+      SNAPSHOT_FILTER=remove_paths \
+      WITH_SNAPSHOT="$snapshot/failure-invalid-cargo-manifest" \
+      expect_run ${WITH_FAILURE} "$exe" diet
+    }
+  )
   (when "asking for help"
     it "succeeds" && {
       expect_run ${SUCCESSFULLY} "$exe" diet --help
@@ -50,6 +68,20 @@ function remove_bytecounts() {
 (with "a cargo user and email"
   export CARGO_NAME=author
   export CARGO_EMAIL=author@example.com
+
+  (sandbox
+    (with "a newly initialized cargo project with one dependency that doesnt exist"
+      step "init cargo project" &&
+        expect_run ${SUCCESSFULLY} cargo init --name library --bin
+        echo 'should-never-exist-on-cratesio = "42.21.10"' >> Cargo.toml
+
+      it "succeeds" && {
+        SNAPSHOT_FILTER=remove_paths \
+        WITH_SNAPSHOT="$snapshot/success-invalid-dependencies-but-valid-package" \
+        expect_run ${SUCCESSFULLY} "$exe" diet
+      }
+    )
+  )
 
   (sandbox
     (with "a newly initialized cargo project"
