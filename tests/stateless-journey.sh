@@ -7,6 +7,7 @@ root="$(cd "${0%/*}" && pwd)"
 exe="$(cd "${exe%/*}" && echo "$(pwd)/${exe##*/}")"
 # shellcheck disable=1090
 source "$root/utilities.sh"
+source "$root/helpers.sh"
 snapshot="$root/snapshots"
 
 SUCCESSFULLY=0
@@ -20,6 +21,16 @@ function remove_paths() {
 function remove_bytecounts() {
     sed -E 's/[0-9]+ B/<bytecount>/g'
 }
+
+
+(in-clone-of https://github.com/greshake/i3status-rust
+  stepn "reproduce https://github.com/the-lean-crate/cargo-diet/issues/1"
+  (when "cargo diet in dry-run mode"
+    it "runs successfully" && {
+      expect_run ${SUCCESSFULLY} "$exe" diet -n
+    }
+  )
+)
 
 (sandbox
   (with "with no cargo project"

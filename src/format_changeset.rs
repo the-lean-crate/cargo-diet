@@ -132,7 +132,8 @@ pub fn format_changeset(
     }
 
     {
-        let hunk_after_last_change = last_changed_hunk.map(|l| (l + 1).min(diffs.len()));
+        let hunk_after_last_change =
+            last_changed_hunk.map(|l| (l + 1).min(diffs.len().saturating_sub(1)));
         print_context(
             hunk_after_last_change.map(|l| {
                 let skipped_lines_note = lines_of(&diffs[l])

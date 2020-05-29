@@ -1,5 +1,9 @@
 ### What's new…
 
+#### v1.1.2 - Bugfixes
+
+* Fix [off-by-one error](https://github.com/the-lean-crate/cargo-diet/issues/1) when printing the diff
+
 #### v1.1.1
 
 * Reduce file-size of produced binaries
