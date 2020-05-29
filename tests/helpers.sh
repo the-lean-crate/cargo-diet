@@ -4,7 +4,7 @@ function in-clone-of () {
   local repo_url=${1:?First argument is the repository URL to clone}
   _context in-clone-of "$repo_url"
 
-  local base_dir=$TMPDIR/cargo-diet-tests
+  local base_dir=${TMPDIR:-/tmp}/cargo-diet-tests
   mkdir -p "$base_dir"
 
   local repo_name=${repo_url##*/}
