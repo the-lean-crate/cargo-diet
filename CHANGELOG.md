@@ -1,5 +1,7 @@
 ### What's new…
 
+#### v1.1.3 - Support for Rustc 1.42
+
 #### v1.1.2 - Bugfixes
 
 * Fix [off-by-one error](https://github.com/the-lean-crate/cargo-diet/issues/1) when printing the diff
