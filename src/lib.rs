@@ -359,7 +359,10 @@ fn check_package_size(
 #[cfg(feature = "dev-support")]
 fn write_package_for_unit_tests(path: Option<PathBuf>, package: &TarPackage) -> Result<()> {
     if let Some(path) = path {
-        std::fs::write(path, rmp_serde::to_vec(package).expect("rmp-serde to always work here"))?;
+        std::fs::write(
+            path,
+            rmp_serde::to_vec(package).expect("rmp-serde to always work here"),
+        )?;
     };
     Ok(())
 }
