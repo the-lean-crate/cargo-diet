@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
-      run: make journey-tests
+      run: make tests
     - name: Check crate package size
       run: cargo run -- diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
     - name: Check crate package size (with install action)

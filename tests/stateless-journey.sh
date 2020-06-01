@@ -78,6 +78,18 @@ function remove_bytecounts() {
         WITH_SNAPSHOT="$snapshot/success-invalid-dependencies-but-valid-package" \
         expect_run ${SUCCESSFULLY} "$exe" diet
       }
+
+      (when "running it with --save-package-for-unit-test flag"
+        FILE_PATH=name-of-package-for-testing.rmp
+        it "succeeds" && {
+          WITH_SNAPSHOT="$snapshot/success-save-package" \
+          expect_run ${SUCCESSFULLY} "$exe" diet --save-package-for-unit-test "${FILE_PATH}"
+        }
+
+        it "creates the file at the given path" && {
+         expect_exists "${FILE_PATH}"
+        }
+      )
     )
   )
 

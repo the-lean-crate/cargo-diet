@@ -30,7 +30,7 @@ mod args {
         /// If set, no change will actually be made to the Cargo.toml file, simulating what would be done instead.
         pub dry_run: bool,
 
-        #[structopt(long, parse(try_from_str = parse_size))]
+        #[structopt(long, value_name = "limit", parse(try_from_str = parse_size))]
         /// If set, and the estimated compressed size of the package would exceed the given size, i.e. 40KB, the command
         /// will exit with a non-zero exit code.
         ///
@@ -40,6 +40,11 @@ mod args {
         /// This is particularly useful when running on CI to avoid allowing the package to become too big unexpectedly, which
         /// can happen if big files are placed in currently included directories.
         pub package_size_limit: Option<u64>,
+
+        #[structopt(long, value_name = "output-path")]
+        #[cfg(feature = "dev-support")]
+        /// If set, this specifies the path at which a package description for use in criner-waste-report tests should be written to.
+        pub save_package_for_unit_test: Option<std::path::PathBuf>,
     }
 
     fn parse_size(src: &str) -> Result<u64, byte_unit::ByteError> {
@@ -62,6 +67,8 @@ fn main() -> anyhow::Result<()> {
         reset_manifest: reset,
         dry_run,
         package_size_limit,
+        #[cfg(feature = "dev-support")]
+        save_package_for_unit_test,
     }) = Command::from_args();
     cargo_diet::execute(
         cargo_diet::Options {
@@ -69,6 +76,8 @@ fn main() -> anyhow::Result<()> {
             dry_run,
             colored_output: atty::is(atty::Stream::Stdout),
             package_size_limit,
+            #[cfg(feature = "dev-support")]
+            save_package_for_unit_test,
         },
         std::io::stdout().lock(),
     )?;

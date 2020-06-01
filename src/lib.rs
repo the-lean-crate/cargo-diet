@@ -15,7 +15,7 @@ use format_changeset::format_changeset;
 use std::{
     fs,
     io::{BufRead, BufReader, Cursor},
-    path::Path,
+    path::{Path, PathBuf},
     str::FromStr,
 };
 
@@ -291,6 +291,8 @@ pub struct Options {
     pub dry_run: bool,
     pub colored_output: bool,
     pub package_size_limit: Option<u64>,
+    #[cfg(feature = "dev-support")]
+    pub save_package_for_unit_test: Option<PathBuf>,
 }
 
 fn check_package_size(
@@ -318,7 +320,7 @@ fn check_package_size(
         );
         // NOTE: we are not taking generated files into consideration, but assume the space required for them is negligble
         // The reason we do things in memory is to avoid having side-effects, like dropping files to disk by invoking `cargo package` directly.
-        let base = std::path::PathBuf::from("cratename-v0.1.0");
+        let base = PathBuf::from("cratename-v0.1.0");
         for entry in package.entries_meta_data.into_iter() {
             let mut header = tar::Header::new_ustar();
             let path_without_root = tar_path_to_utf8_str(&entry.path);
@@ -354,6 +356,14 @@ fn check_package_size(
     Ok(())
 }
 
+#[cfg(feature = "dev-support")]
+fn write_package_for_unit_tests(path: Option<PathBuf>, package: &TarPackage) -> Result<()> {
+    if let Some(path) = path {
+        std::fs::write(path, rmp_serde::to_vec(package).expect("rmp-serde to always work here"))?;
+    };
+    Ok(())
+}
+
 pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> {
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
 
@@ -365,6 +375,9 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
         std::fs::write(&manifest_path, document.to_string_in_original_order())?;
     }
     let package = cargo_package_content()?;
+
+    #[cfg(feature = "dev-support")]
+    write_package_for_unit_tests(options.save_package_for_unit_test, &package)?;
     let package_size_limit = options.package_size_limit.map(|s| (package.clone(), s));
     // In dry-run mode, reset the manifest to its original state right after we obtained the package content
     // that saw the reset manifest file, i.e. one without includes or excludes
