@@ -29,7 +29,7 @@ structopt = "0.3.14"
 anyhow = "1.0.31"
 quick-error = "1.2.3"
 locate-cargo-manifest = "0.2.0"
-toml_edit = "0.1.5"
+toml_edit = "0.2.0"
 bytesize = "1.0.1"
 criner-waste-report = { version = "0.1.0", default-features = false }
 ansi_term = "0.12.1"

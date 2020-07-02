@@ -119,7 +119,7 @@ fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Pattern
     doc["package"][key] = toml_edit::value({
         let mut v = toml_edit::Array::default();
         for pattern in patterns.into_iter() {
-            v.push(pattern);
+            v.push(pattern).unwrap();
         }
         v
     });
