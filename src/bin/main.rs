@@ -21,6 +21,10 @@ mod args {
     #[derive(Debug, FromArgs)]
     #[argh(subcommand, name = "diet")]
     pub struct Diet {
+        #[argh(switch, short = 'v')]
+        /// if set, print the program version.
+        pub version: bool,
+
         #[argh(switch, short = 'r')]
         /// if set, existing include and exclude directives will be removed prior to running the command.
         ///
@@ -66,16 +70,19 @@ mod args {
 use args::{Args, Diet, Subcommands};
 
 fn main() -> anyhow::Result<()> {
-    let Args {
-        cmd:
-            Subcommands::Diet(Diet {
-                reset_manifest: reset,
-                dry_run,
-                package_size_limit,
-                #[cfg(feature = "dev-support")]
-                save_package_for_unit_test,
-            }),
-    } = argh::from_env();
+    let cmd = argh::from_env::<Args>().cmd;
+    let Subcommands::Diet(Diet {
+        version,
+        reset_manifest: reset,
+        dry_run,
+        package_size_limit,
+        #[cfg(feature = "dev-support")]
+        save_package_for_unit_test,
+    }) = cmd;
+    if version {
+        println!(env!("CARGO_PKG_VERSION"));
+        return Ok(());
+    }
     cargo_diet::execute(
         cargo_diet::Options {
             reset,
