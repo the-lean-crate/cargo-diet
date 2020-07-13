@@ -53,3 +53,4 @@ codegen-units = 1
 incremental = false
 overflow-checks = true
 opt-level="s"
+build-override = { opt-level = 0 }
