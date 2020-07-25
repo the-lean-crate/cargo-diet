@@ -1,5 +1,9 @@
 ### What's new…
 
+#### v1.1.5 - Use more generous exclude globs
+
+* fixes https://github.com/the-lean-crate/cargo-diet/issues/6
+
 #### v1.1.4 - Switch from Structopt/clap to Argh for faster builds and smaller binary
 
 #### v1.1.3 - Support for Rustc 1.42

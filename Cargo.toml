@@ -1,6 +1,6 @@
 [package]
 name = "cargo-diet"
-version = "1.1.4"
+version = "1.1.5"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/the-lean-crate/cargo-diet"
@@ -30,7 +30,7 @@ quick-error = "1.2.3"
 locate-cargo-manifest = "0.2.0"
 toml_edit = "0.2.0"
 bytesize = "1.0.1"
-criner-waste-report = { version = "0.1.0", default-features = false }
+criner-waste-report = { version = "0.1.4", default-features = false }
 ansi_term = "0.12.1"
 difference = "2.0.0"
 atty = "0.2.14"
