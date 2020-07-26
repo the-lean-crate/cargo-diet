@@ -28,7 +28,7 @@ fn report_lean_crate(mut out: impl std::io::Write) -> std::io::Result<()> {
 fn report_savings(
     total_size_in_bytes: u64,
     total_files: u64,
-    mut wasted_files: Vec<WastedFile>,
+    wasted_files: Vec<WastedFile>,
     mut out: impl std::io::Write,
 ) -> std::io::Result<()> {
     if wasted_files.is_empty() {
@@ -37,6 +37,30 @@ fn report_savings(
             "Include or exclude directives were optimized, without affecting the crate's size."
         )?;
         return Ok(());
+    }
+
+    let file_len = wasted_files.len();
+    let wasted_bytes = entries_to_table(wasted_files, &mut out, None)?;
+
+    writeln!(
+        out,
+        "Saved {:.0}% or {} in {} files (of {} and {} files in entire crate)",
+        (wasted_bytes as f32 / total_size_in_bytes as f32) * 100.0,
+        ByteSize(wasted_bytes),
+        file_len,
+        ByteSize(total_size_in_bytes),
+        total_files
+    )?;
+    Ok(())
+}
+
+fn entries_to_table(
+    mut entries: Vec<WastedFile>,
+    mut out: impl std::io::Write,
+    items: Option<usize>,
+) -> std::io::Result<u64> {
+    if entries.is_empty() {
+        return Ok(0);
     }
     use ascii_table::{Align, AsciiTable, Column};
     use std::fmt::Display;
@@ -62,23 +86,21 @@ fn report_savings(
         },
     );
 
-    wasted_files.sort_by(|x, y| x.1.cmp(&y.1));
-    let wasted_bytes: u64 = wasted_files.iter().map(|(_, size)| size).sum();
-    let data: Vec<Vec<&dyn Display>> = wasted_files
+    entries.sort_by(|x, y| y.1.cmp(&x.1));
+    let bytes: u64 = entries
         .iter()
+        .take(items.unwrap_or(entries.len()))
+        .rev()
+        .map(|(_, size)| size)
+        .sum();
+    let data: Vec<Vec<&dyn Display>> = entries
+        .iter()
+        .take(items.unwrap_or(entries.len()))
+        .rev()
         .map(|(path, size)| vec![path as &dyn Display, size as &dyn Display])
         .collect();
-    ascii_table.print(data);
-    writeln!(
-        out,
-        "Saved {:.0}% or {} in {} files (of {} and {} files in entire crate)",
-        (wasted_bytes as f32 / total_size_in_bytes as f32) * 100.0,
-        ByteSize(wasted_bytes),
-        wasted_files.len(),
-        ByteSize(total_size_in_bytes),
-        total_files
-    )?;
-    Ok(())
+    out.write_all(ascii_table.format(data).as_bytes())?;
+    Ok(bytes)
 }
 
 fn edit(
@@ -290,6 +312,7 @@ pub struct Options {
     pub reset: bool,
     pub dry_run: bool,
     pub colored_output: bool,
+    pub list: Option<usize>,
     pub package_size_limit: Option<u64>,
     #[cfg(feature = "dev-support")]
     pub save_package_for_unit_test: Option<PathBuf>,
@@ -387,6 +410,9 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     if options.reset && options.dry_run {
         std::fs::write(&manifest_path, &cargo_manifest_original_content)?;
     }
+    let list = options
+        .list
+        .map(|list| (list, package.entries_meta_data.clone()));
     let document = edit(document, package, &mut output)?;
     write_manifest(
         &manifest_path,
@@ -398,7 +424,42 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     )?;
 
     if let Some((package, package_size_limit)) = package_size_limit {
-        check_package_size(package, package_size_limit, output, options.colored_output)?;
+        check_package_size(
+            package,
+            package_size_limit,
+            &mut output,
+            options.colored_output,
+        )?;
     }
+    if let Some((list, entries)) = list {
+        list_entries(list, &mut output, entries)?;
+    }
+    Ok(())
+}
+
+fn list_entries(
+    num_entries: usize,
+    mut out: impl std::io::Write,
+    entries: Vec<TarHeader>,
+) -> Result<()> {
+    let num_entries = if num_entries == 0 {
+        entries.len()
+    } else {
+        num_entries.min(entries.len())
+    };
+    let bytes = entries_to_table(
+        entries
+            .into_iter()
+            .map(|tf| (tar_path_to_utf8_str(&tf.path).into(), tf.size))
+            .collect(),
+        &mut out,
+        Some(num_entries),
+    )?;
+    writeln!(
+        out,
+        "Crate contains a total of {} files and {}",
+        num_entries,
+        ByteSize(bytes)
+    )?;
     Ok(())
 }

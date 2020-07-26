@@ -35,6 +35,13 @@ mod args {
         /// if set, no change will actually be made to the Cargo.toml file, simulating what would be done instead.
         pub dry_run: bool,
 
+        #[argh(option, short = 'l')]
+        /// provide any number N to limit the output to the N biggest files, ascending.
+        ///
+        /// if to 0, list all entries that would be in the crate with the current configuration.
+        /// Otherwise list the given amount of entries.
+        pub list: Option<usize>,
+
         #[argh(option, from_str_fn(parse_size))]
         /// if set, and the estimated compressed size of the package would exceed the given size, i.e. 40KB, the command
         /// will exit with a non-zero exit code.
@@ -75,6 +82,7 @@ fn main() -> anyhow::Result<()> {
         version,
         reset_manifest: reset,
         dry_run,
+        list,
         package_size_limit,
         #[cfg(feature = "dev-support")]
         save_package_for_unit_test,
@@ -88,6 +96,7 @@ fn main() -> anyhow::Result<()> {
             reset,
             dry_run,
             colored_output: atty::is(atty::Stream::Stdout),
+            list,
             package_size_limit,
             #[cfg(feature = "dev-support")]
             save_package_for_unit_test,

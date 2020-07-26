@@ -231,6 +231,31 @@ function remove_bytecounts() {
             }
           )
         )
+
+        (with "the --list flag"
+          (when "a small amount is specified"
+            it "runs successfully and lists the given amount of entries entries in the package" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/success-list-with-limit" \
+              expect_run ${SUCCESSFULLY} "$exe" diet -n --list 2
+            }
+
+            it "does not put a file in target/package" && {
+              expect_run ${WITH_FAILURE} find target/package
+            }
+          )
+          (when "a 0 is specified as amount"
+            it "runs successfully and lists all entries entries in the package" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/success-list-no-limit-with-zero" \
+              expect_run ${SUCCESSFULLY} "$exe" diet -n --list 0
+            }
+
+            it "does not put a file in target/package" && {
+              expect_run ${WITH_FAILURE} find target/package
+            }
+          )
+        )
       )
     )
   )
