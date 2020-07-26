@@ -1,5 +1,11 @@
 ### What's new…
 
+#### v1.2.0 - Add `--list N` flag…
+
+…to unconditionally show the biggest N entries of the crate at the end of any `cargo diet` operation.
+
+It's best used with `-n` to avoid any actual change to `Cargo.toml`.
+
 #### v1.1.5 - Use more generous exclude globs
 
 * fixes https://github.com/the-lean-crate/cargo-diet/issues/6
