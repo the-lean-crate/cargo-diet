@@ -72,7 +72,7 @@ fn entries_to_table(
     ascii_table.columns.insert(
         0,
         Column {
-            header: "File".to_string(),
+            header: "Removed File".to_string(),
             align: Align::Left,
             ..Default::default()
         },

@@ -1,9 +1,9 @@
 Your crate is perfectly lean!
 There would be no change.
-┌─────────────┬─────────────┐
-│ File        │ Size (Byte) │
-├─────────────┼─────────────┤
-│ src/main.rs │          45 │
-│ Cargo.toml  │         270 │
-└─────────────┴─────────────┘
+┌──────────────┬─────────────┐
+│ Removed File │ Size (Byte) │
+├──────────────┼─────────────┤
+│ src/main.rs  │          45 │
+│ Cargo.toml   │         270 │
+└──────────────┴─────────────┘
 Crate contains a total of 2 files and <bytecount>
