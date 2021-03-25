@@ -334,7 +334,7 @@ fn check_package_size(
         fn flush(&mut self) -> std::io::Result<()> {
             Ok(())
         }
-    };
+    }
 
     let actual_estimated_package_size = {
         let byte_counter = ByteCounter(0);
