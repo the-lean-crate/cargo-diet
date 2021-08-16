@@ -4,6 +4,6 @@ There would be no change.
 │ Removed File │ Size (Byte) │
 ├──────────────┼─────────────┤
 │ src/main.rs  │          45 │
-│ Cargo.toml   │         270 │
+│ Cargo.toml   │         228 │
 └──────────────┴─────────────┘
 Crate contains a total of 2 files and <bytecount>

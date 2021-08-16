@@ -3,12 +3,12 @@
 ├─────────────────┼─────────────┤
 │ src/lib_test.rs │           0 │
 └─────────────────┴─────────────┘
-Saved 0% or 0 B in 1 files (of 263 B and 4 files in entire crate)
+Saved 0% or 0 B in 1 files (of 221 B and 4 files in entire crate)
 
 The following change was made to Cargo.toml:
 Diff - removed / added + :
-[…skipped 3 lines…]
-authors = ["author <author@example.com>"]
+[…skipped 2 lines…]
+version = "0.1.0"
 edition = "2018"
 -include = ["src/**/*", "!**/*_test.*"]
 +include = ["src/**/*", "README.md", "!**/*_test.*"]

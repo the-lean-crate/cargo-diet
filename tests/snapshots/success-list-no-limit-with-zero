@@ -5,6 +5,6 @@ There would be no change.
 ├──────────────┼─────────────┤
 │ README.md    │           0 │
 │ src/main.rs  │          45 │
-│ Cargo.toml   │         270 │
+│ Cargo.toml   │         228 │
 └──────────────┴─────────────┘
 Crate contains a total of 3 files and <bytecount>
