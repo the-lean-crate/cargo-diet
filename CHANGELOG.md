@@ -1,5 +1,9 @@
 ### What's new…
 
+#### v1.2.1 - Ignore deleted, unpackable files…
+
+- See https://github.com/the-lean-crate/cargo-diet/issues/7 for details
+
 #### v1.2.0 - Add `--list N` flag…
 
 …to unconditionally show the biggest N entries of the crate at the end of any `cargo diet` operation.

@@ -205,22 +205,33 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         }
 
         const REGULAR_FILE: u8 = b'0';
-        let meta = fs::metadata(&path).map_err(|err| Error::FileMetadata(err, path.to_owned()))?;
-        meta_entries.push(TarHeader {
-            path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
-            size: meta.len(),
-            entry_type: REGULAR_FILE,
-        });
+        if let Some(meta) = fs::metadata(&path)
+            .map(Some)
+            .or_else(|err| {
+                if err.kind() == std::io::ErrorKind::NotFound {
+                    Ok(None)
+                } else {
+                    Err(err)
+                }
+            })
+            .map_err(|err| Error::FileMetadata(err, path.to_owned()))?
+        {
+            meta_entries.push(TarHeader {
+                path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
+                size: meta.len(),
+                entry_type: REGULAR_FILE,
+            });
 
-        if interesting_paths.iter().any(|p| p == &path) {
-            entries.push((
-                TarHeader {
-                    path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
-                    size: meta.len(),
-                    entry_type: REGULAR_FILE,
-                },
-                fs::read(path)?,
-            ))
+            if interesting_paths.iter().any(|p| p == &path) {
+                entries.push((
+                    TarHeader {
+                        path: root.join(&path).to_string_lossy().as_bytes().to_owned(),
+                        size: meta.len(),
+                        entry_type: REGULAR_FILE,
+                    },
+                    fs::read(path)?,
+                ))
+            }
         }
     }
     Ok(TarPackage {
