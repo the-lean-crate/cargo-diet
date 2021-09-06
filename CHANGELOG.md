@@ -1,5 +1,7 @@
 ### What's new…
 
+#### v1.2.2 - Dependency upgrades
+
 #### v1.2.1 - Ignore deleted, unpackable files…
 
 - See https://github.com/the-lean-crate/cargo-diet/issues/7 for details
