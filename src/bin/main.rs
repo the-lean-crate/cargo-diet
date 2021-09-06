@@ -61,16 +61,14 @@ mod args {
 
     fn parse_size(src: &str) -> Result<u64, String> {
         byte_unit::Byte::from_str(src)
+            .map_err(|err| err.to_string())
             .and_then(|b| {
                 if b.get_bytes() > std::u64::MAX as u128 {
-                    Err(byte_unit::ByteError::ValueIncorrect(
-                        "Value is too large".into(),
-                    ))
+                    Err("Value is too large".into())
                 } else {
                     Ok(b.get_bytes() as u64)
                 }
             })
-            .map_err(Into::into)
     }
 }
 

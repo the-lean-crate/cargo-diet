@@ -101,9 +101,12 @@ dependencies = [
 
 [[package]]
 name = "byte-unit"
-version = "3.1.4"
+version = "4.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "415301c9de11005d4b92193c0eb7ac7adc37e5a49e0ac9bed0a42343512744b8"
+checksum = "063197e6eb4b775b64160dedde7a0986bb2836cce140e9492e9e96f28e18bcd8"
+dependencies = [
+ "utf8-width",
+]
 
 [[package]]
 name = "byteorder"
@@ -368,9 +371,9 @@ dependencies = [
 
 [[package]]
 name = "quick-error"
-version = "1.2.3"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
+checksum = "a993555f31e5a609f617c12db6250dedcac1b0a85076912c436e6fc9b2c8e6a3"
 
 [[package]]
 name = "quote"
@@ -428,9 +431,9 @@ dependencies = [
 
 [[package]]
 name = "rmp-serde"
-version = "0.14.4"
+version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ce7d70c926fe472aed493b902010bccc17fa9f7284145cb8772fd22fdb052d8"
+checksum = "723ecff9ad04f4ad92fe1c8ca6c20d2196d9286e9c60727c4cb5511629260e9d"
 dependencies = [
  "byteorder",
  "rmp",
@@ -543,6 +546,12 @@ name = "unicode-xid"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
+
+[[package]]
+name = "utf8-width"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cf7d77f457ef8dfa11e4cd5933c5ddb5dc52a94664071951219a97710f0a32b"
 
 [[package]]
 name = "wasi"
