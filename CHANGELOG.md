@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.2.3 (2021-10-26)
 
 Re-release with no functional changes, but a nicer changelog.
 
@@ -13,7 +13,7 @@ Re-release with no functional changes, but a nicer changelog.
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 50 calendar days.
+ - 5 commits contributed to the release over the course of 50 calendar days.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -24,6 +24,8 @@ Re-release with no functional changes, but a nicer changelog.
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - update changelog prior to release ([`8615e13`](https://github.com/the-lean-crate/cargo-diet/commit/8615e1361f1b4b67de68572c84a79a8ec1891b77))
+    - rewrite changelog ([`61a8c6a`](https://github.com/the-lean-crate/cargo-diet/commit/61a8c6a11a7f19c853b72f5aa9c35b33f52344bf))
     - cleanup changelog ([`0f712b9`](https://github.com/the-lean-crate/cargo-diet/commit/0f712b946d18b1840664d1de484c85ee068d589f))
     - A new and resilient way to create github releases if they don't exist ([`117db12`](https://github.com/the-lean-crate/cargo-diet/commit/117db128e8e75684dcb22b44715e3c1635aa64d0))
     - upgdate snapshots to fix tests ([`b310eca`](https://github.com/the-lean-crate/cargo-diet/commit/b310ecaa2d64638f5358415b27dda9d6d9448fbe))
