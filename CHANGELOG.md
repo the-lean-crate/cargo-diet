@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.4 (2022-04-14)
+
+### Bug Fixes
+
+ - <csr-id-132307a032acf5aab67e33cfe7c632e01860e376/> assure cyclic symlinks in package won't break it.
+   For now we just ignore any IO error due to limitations in error
+   granularity, which might mean that the package size is a little off.
+   
+   That's preferable over not working at all.
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 170 days passed between releases.
+ - 1 commit where understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' where seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - assure cyclic symlinks in package won't break it. ([`132307a`](https://github.com/the-lean-crate/cargo-diet/commit/132307a032acf5aab67e33cfe7c632e01860e376))
+</details>
+
 ## 1.2.3 (2021-10-26)
 
 Re-release with no functional changes, but a nicer changelog.
@@ -13,7 +42,8 @@ Re-release with no functional changes, but a nicer changelog.
 
 <csr-read-only-do-not-edit/>
 
- - 5 commits contributed to the release over the course of 50 calendar days.
+ - 6 commits contributed to the release over the course of 50 calendar days.
+ - 50 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -24,6 +54,7 @@ Re-release with no functional changes, but a nicer changelog.
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.2.3 ([`5525517`](https://github.com/the-lean-crate/cargo-diet/commit/5525517d9163618fc6fcbba7ee2e6ea8a66f4116))
     - update changelog prior to release ([`8615e13`](https://github.com/the-lean-crate/cargo-diet/commit/8615e1361f1b4b67de68572c84a79a8ec1891b77))
     - rewrite changelog ([`61a8c6a`](https://github.com/the-lean-crate/cargo-diet/commit/61a8c6a11a7f19c853b72f5aa9c35b33f52344bf))
     - cleanup changelog ([`0f712b9`](https://github.com/the-lean-crate/cargo-diet/commit/0f712b946d18b1840664d1de484c85ee068d589f))
@@ -40,6 +71,7 @@ Re-release with no functional changes, but a nicer changelog.
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
+ - 20 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -67,6 +99,7 @@ Re-release with no functional changes, but a nicer changelog.
 <csr-read-only-do-not-edit/>
 
  - 8 commits contributed to the release over the course of 216 calendar days.
+ - 386 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -98,6 +131,7 @@ It's best used with `-n` to avoid any actual change to `Cargo.toml`.
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 1 day passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -123,6 +157,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 12 calendar days.
+ - 22 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -146,6 +181,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 9 commits contributed to the release over the course of 31 calendar days.
+ - 32 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -176,6 +212,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release.
+ - 2 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
@@ -289,6 +326,7 @@ Initial release
 <csr-read-only-do-not-edit/>
 
  - 46 commits contributed to the release over the course of 6 calendar days.
+ - 70 days passed between releases.
  - 0 commits where understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' where seen in commit messages
 
