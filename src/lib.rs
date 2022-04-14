@@ -205,7 +205,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         }
 
         const REGULAR_FILE: u8 = b'0';
-        if let Some(meta) = fs::metadata(&path)
+        if let Some(meta) = fs::symlink_metadata(&path)
             .map(Some)
             .or_else(|err| {
                 if err.kind() == std::io::ErrorKind::NotFound {
@@ -352,6 +352,7 @@ fn check_package_size(
         let mut builder = tar::Builder::new(
             flate2::GzBuilder::new().write(byte_counter, flate2::Compression::best()),
         );
+        builder.follow_symlinks(false);
         // NOTE: we are not taking generated files into consideration, but assume the space required for them is negligble
         // The reason we do things in memory is to avoid having side-effects, like dropping files to disk by invoking `cargo package` directly.
         let base = PathBuf::from("cratename-v0.1.0");
@@ -360,7 +361,11 @@ fn check_package_size(
             let path_without_root = tar_path_to_utf8_str(&entry.path);
             header.set_path(&base.join(path_without_root))?;
 
-            let mut file = std::fs::File::open(path_without_root)?;
+            let mut file = match std::fs::File::open(path_without_root) {
+                Ok(f) => f,
+                // Err(err) if err.kind() == std::io::ErrorKind::FilesystemLoop => continue,
+                Err(_) => continue, // for now ignore all errors until we can use the line above
+            };
             let metadata = file.metadata()?;
             header.set_metadata(&metadata);
             header.set_cksum();
