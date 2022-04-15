@@ -96,7 +96,7 @@ function remove_bytecounts() {
   (sandbox
     (with "a newly initialized cargo project"
       step "init cargo project" &&
-        expect_run ${SUCCESSFULLY} cargo init --name library --bin
+        expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin
 
       (with "the --dry-run flag set"
         it "runs successfully and states the crate is lean" && {

@@ -13,7 +13,7 @@ function in-clone-of () {
   cd $repo_dir 2>/dev/null || {
     cd "$base_dir"
     _note running "${GREEN}" "git clone $repo_url"
-    expect_run 0 git clone $repo_url
+    expect_run 0 git clone --depth 1 $repo_url
     cd $repo_name
   }
 }
