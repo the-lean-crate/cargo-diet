@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.2.5 (2023-03-17)
 
 Update dependencies in this maintenance release.
 
@@ -13,7 +13,7 @@ Update dependencies in this maintenance release.
 
 <csr-read-only-do-not-edit/>
 
- - 3 commits contributed to the release over the course of 336 calendar days.
+ - 4 commits contributed to the release over the course of 336 calendar days.
  - 337 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +25,7 @@ Update dependencies in this maintenance release.
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Update changelog prior to relrease ([`6ed2215`](https://github.com/the-lean-crate/cargo-diet/commit/6ed22157fb456f9ce7a3992492f16fe6cdca7ac9))
     - Upgrade rmp-serde ([`0d03342`](https://github.com/the-lean-crate/cargo-diet/commit/0d03342df5931c2881abdd0ce2f257dced3601aa))
     - Update dependencies ([`1039553`](https://github.com/the-lean-crate/cargo-diet/commit/1039553dcb8060ca40537094e414cfa5a85633e4))
     - Fix journey tests ([`90f6bda`](https://github.com/the-lean-crate/cargo-diet/commit/90f6bda3b40a3d6fd88ff181b3cb98dba7272fac))
