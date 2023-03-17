@@ -178,13 +178,13 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         .lines()
         .collect::<std::result::Result<Vec<_>, _>>()?;
     let cargo_manifest = CargoConfig::from(
-        fs::read(
+        fs::read_to_string(
             paths
                 .iter()
                 .find(|p| *p == "Cargo.toml")
                 .expect("cargo manifest"),
         )?
-        .as_slice(),
+        .as_str(),
     );
     let interesting_paths = {
         let mut v = vec!["Cargo.toml".to_string()];
