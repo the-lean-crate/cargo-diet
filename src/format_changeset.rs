@@ -65,25 +65,14 @@ pub fn format_changeset(
             t,
             "{} {} / {} :",
             Style::new().bold().paint("Diff"),
-            Red.paint(format!("{} removed", SIGN_LEFT)),
-            Green.paint(format!("added {}", SIGN_RIGHT))
+            Red.paint(format!("{SIGN_LEFT} removed")),
+            Green.paint(format!("added {SIGN_RIGHT}"))
         )?;
     } else {
-        writeln!(
-            t,
-            "Diff {} / {} :",
-            format!("{} removed", SIGN_LEFT),
-            format!("added {}", SIGN_RIGHT)
-        )?;
+        writeln!(t, "Diff {SIGN_LEFT} removed / added {SIGN_RIGHT} :",)?;
     }
 
-    let is_different = |d: &_| {
-        if let Difference::Same(_) = d {
-            false
-        } else {
-            true
-        }
-    };
+    let is_different = |d: &_| !matches!(d, Difference::Same(_));
 
     let first_changed_hunk = diffs.iter().position(is_different);
     let last_changed_hunk = diffs.iter().rposition(is_different);

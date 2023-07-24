@@ -62,29 +62,23 @@ fn entries_to_table(
     if entries.is_empty() {
         return Ok(0);
     }
-    use ascii_table::{Align, AsciiTable, Column};
+    use ascii_table::{Align, AsciiTable};
     use std::fmt::Display;
 
     let mut ascii_table = AsciiTable::default();
-    ascii_table.max_width = termsize::get()
-        .unwrap_or(termsize::Size { rows: 20, cols: 80 })
-        .cols as usize;
-    ascii_table.columns.insert(
-        0,
-        Column {
-            header: "Removed File".to_string(),
-            align: Align::Left,
-            ..Default::default()
-        },
+    ascii_table.set_max_width(
+        termsize::get()
+            .unwrap_or(termsize::Size { rows: 20, cols: 80 })
+            .cols as usize,
     );
-    ascii_table.columns.insert(
-        1,
-        Column {
-            header: "Size (Byte)".to_string(),
-            align: Align::Right,
-            ..Default::default()
-        },
-    );
+    ascii_table
+        .column(0)
+        .set_header("Removed File")
+        .set_align(Align::Left);
+    ascii_table
+        .column(1)
+        .set_header("Size (Byte)")
+        .set_align(Align::Right);
 
     entries.sort_by(|x, y| y.1.cmp(&x.1));
     let bytes: u64 = entries
@@ -141,7 +135,7 @@ fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Pattern
     doc["package"][key] = toml_edit::value({
         let mut v = toml_edit::Array::default();
         for pattern in patterns.into_iter() {
-            v.push(pattern).unwrap();
+            v.push(pattern);
         }
         v
     });
@@ -156,8 +150,7 @@ fn set_include(doc: &mut toml_edit::Document, include: Patterns) {
 }
 
 fn remove_exclude(doc: &mut toml_edit::Document) {
-    doc.as_table_mut()
-        .entry("package")
+    doc.as_table_mut()["package"]
         .as_table_mut()
         .expect("table")
         .remove("exclude");
@@ -245,7 +238,6 @@ fn cargo_package_content() -> Result<TarPackage> {
     let output = std::process::Command::new(cargo)
         .arg("package")
         .arg("--no-verify")
-        .arg("--offline")
         .arg("--allow-dirty")
         .arg("--quiet")
         .arg("--list")
@@ -255,19 +247,14 @@ fn cargo_package_content() -> Result<TarPackage> {
             std::str::from_utf8(&output.stderr)
                 .map(|s| s.to_owned())
                 .unwrap_or_else(|_| String::from_utf8_lossy(&output.stderr).to_string()),
-        )
-        .into())
+        ))
     } else {
         tar_package_from_paths(output.stdout)
     }
 }
 
 fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
-    let package = doc
-        .as_table_mut()
-        .entry("package")
-        .as_table_mut()
-        .expect("table");
+    let package = doc.as_table_mut()["package"].as_table_mut().expect("table");
     package.remove("exclude");
     package.remove("include");
 }
@@ -280,7 +267,7 @@ fn write_manifest(
     mut output: impl std::io::Write,
     with_color: bool,
 ) -> Result<()> {
-    let edit = document.to_string_in_original_order();
+    let edit = document.to_string();
     if !dry_run {
         std::fs::write(manifest_path, &edit)?;
     }
@@ -414,7 +401,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
 
     if options.reset {
         clear_includes_and_excludes(&mut document);
-        std::fs::write(&manifest_path, document.to_string_in_original_order())?;
+        std::fs::write(&manifest_path, document.to_string())?;
     }
     let package = cargo_package_content()?;
 

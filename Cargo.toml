@@ -25,22 +25,22 @@ default = []
 dev-support = ["rmp-serde"]
 
 [dependencies]
-anyhow = "1.0.31"
-quick-error = "2.0.0"
-locate-cargo-manifest = "0.2.0"
-toml_edit = "0.2.0"
-bytesize = "1.0.1"
-criner-waste-report = { version = "0.1.4", default-features = false }
+anyhow = "1.0.72"
+quick-error = "2.0.1"
+locate-cargo-manifest = "0.2.2"
+toml_edit = "0.19.14"
+bytesize = "1.2.0"
+criner-waste-report = { version = "0.1.5", default-features = false }
 ansi_term = "0.12.1"
 difference = "2.0.0"
 atty = "0.2.14"
-ascii_table = "3.0.1"
+ascii_table = "4.0.2"
 termsize = "0.1.6"
-byte-unit = "4.0.0"
-tar = "0.4.28"
-flate2 = "1.0.14"
-rmp-serde = { version = "1.1.1", optional = true }
-argh = "0.1.3"
+byte-unit = "4.0.19"
+tar = "0.4.39"
+flate2 = "1.0.26"
+rmp-serde = { version = "1.1.2", optional = true }
+argh = "0.1.10"
 
 [[bin]]
 name="cargo-diet"

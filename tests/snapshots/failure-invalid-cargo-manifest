@@ -1,11 +1,9 @@
-Error: TomlParse(TomlError { message: "TOML parse error at line 1, column 7\n  |\n1 | foobar\n  |       ^\nUnexpected `\n`\nExpected `=`\n" })
+Error: TomlParse(TomlError { message: "expected `.`, `=`", original: Some("foobar\n"), keys: [], span: Some(6..7) })
 
 Caused by:
     TOML parse error at line 1, column 7
       |
     1 | foobar
       |       ^
-    Unexpected `
-    `
-    Expected `=`
+    expected `.`, `=`
     
