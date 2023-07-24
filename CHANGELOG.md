@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.7 (2023-07-24)
+
+### Bug Fixes
+
+ - <csr-id-1375c8682ed7fb80462b6397475eeeef87d3fc04/> release script to use recent ubuntu
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 1 commit contributed to the release.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Release script to use recent ubuntu ([`1375c86`](https://github.com/the-lean-crate/cargo-diet/commit/1375c8682ed7fb80462b6397475eeeef87d3fc04))
+</details>
+
 ## 1.2.6 (2023-07-24)
 
 ### Bug Fixes
@@ -15,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 128 calendar days.
+ - 5 commits contributed to the release over the course of 128 calendar days.
  - 128 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -27,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.2.6 ([`5b0fc41`](https://github.com/the-lean-crate/cargo-diet/commit/5b0fc412f171356aaf656b02f972fd506229fe7d))
     - Make `cargo-diet` work with recent cargo's that use the `sparse` registry ([`d60e277`](https://github.com/the-lean-crate/cargo-diet/commit/d60e277a525679e6f484ffecf2225325b7923ef3))
     - Fix journey tests by allowing cargo package to go online ([`6f189f9`](https://github.com/the-lean-crate/cargo-diet/commit/6f189f922ba5b2971557a8d967f57ba1e342eda5))
     - Update dependencies and fix lints ([`14eee74`](https://github.com/the-lean-crate/cargo-diet/commit/14eee748ea9266434e96831df0bfe21d16fcb7a5))
