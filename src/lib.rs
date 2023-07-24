@@ -238,7 +238,6 @@ fn cargo_package_content() -> Result<TarPackage> {
     let output = std::process::Command::new(cargo)
         .arg("package")
         .arg("--no-verify")
-        .arg("--offline")
         .arg("--allow-dirty")
         .arg("--quiet")
         .arg("--list")
