@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.6 (2023-07-24)
+
+### Bug Fixes
+
+ - <csr-id-d60e277a525679e6f484ffecf2225325b7923ef3/> make `cargo-diet` work with recent cargo's that use the `sparse` registry
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 4 commits contributed to the release over the course of 128 calendar days.
+ - 128 days passed between releases.
+ - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Make `cargo-diet` work with recent cargo's that use the `sparse` registry ([`d60e277`](https://github.com/the-lean-crate/cargo-diet/commit/d60e277a525679e6f484ffecf2225325b7923ef3))
+    - Fix journey tests by allowing cargo package to go online ([`6f189f9`](https://github.com/the-lean-crate/cargo-diet/commit/6f189f922ba5b2971557a8d967f57ba1e342eda5))
+    - Update dependencies and fix lints ([`14eee74`](https://github.com/the-lean-crate/cargo-diet/commit/14eee748ea9266434e96831df0bfe21d16fcb7a5))
+    - Try to fix installation test: latest doesn't work, explicit tag does. ([`3cefe38`](https://github.com/the-lean-crate/cargo-diet/commit/3cefe382712ab24869c7aa2521f024007fcab6c2))
+</details>
+
 ## 1.2.5 (2023-03-17)
 
 Update dependencies in this maintenance release.
@@ -13,7 +41,7 @@ Update dependencies in this maintenance release.
 
 <csr-read-only-do-not-edit/>
 
- - 4 commits contributed to the release over the course of 336 calendar days.
+ - 5 commits contributed to the release over the course of 336 calendar days.
  - 337 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
@@ -25,6 +53,7 @@ Update dependencies in this maintenance release.
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.2.5 ([`8d41768`](https://github.com/the-lean-crate/cargo-diet/commit/8d41768aea1d83149d5d2ce266d918a44fe9cea5))
     - Update changelog prior to relrease ([`6ed2215`](https://github.com/the-lean-crate/cargo-diet/commit/6ed22157fb456f9ce7a3992492f16fe6cdca7ac9))
     - Upgrade rmp-serde ([`0d03342`](https://github.com/the-lean-crate/cargo-diet/commit/0d03342df5931c2881abdd0ce2f257dced3601aa))
     - Update dependencies ([`1039553`](https://github.com/the-lean-crate/cargo-diet/commit/1039553dcb8060ca40537094e414cfa5a85633e4))

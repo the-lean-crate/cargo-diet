@@ -1,6 +1,6 @@
 [package]
 name = "cargo-diet"
-version = "1.2.5"
+version = "1.2.6"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/the-lean-crate/cargo-diet"
