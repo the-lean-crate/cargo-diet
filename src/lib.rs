@@ -98,10 +98,10 @@ fn entries_to_table(
 }
 
 fn edit(
-    mut doc: toml_edit::Document,
+    mut doc: toml_edit::DocumentMut,
     package: TarPackage,
     output: impl std::io::Write,
-) -> Result<toml_edit::Document> {
+) -> Result<toml_edit::DocumentMut> {
     let report = Report::from_package(
         "crate-name does not matter",
         "crate version does not matter",
@@ -131,7 +131,7 @@ fn edit(
     Ok(doc)
 }
 
-fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Patterns) {
+fn set_package_array(doc: &mut toml_edit::DocumentMut, key: &str, patterns: Patterns) {
     doc["package"][key] = toml_edit::value({
         let mut v = toml_edit::Array::default();
         for pattern in patterns.into_iter() {
@@ -141,15 +141,15 @@ fn set_package_array(doc: &mut toml_edit::Document, key: &str, patterns: Pattern
     });
 }
 
-fn set_exclude(doc: &mut toml_edit::Document, exclude: Patterns) {
+fn set_exclude(doc: &mut toml_edit::DocumentMut, exclude: Patterns) {
     set_package_array(doc, "exclude", exclude)
 }
 
-fn set_include(doc: &mut toml_edit::Document, include: Patterns) {
+fn set_include(doc: &mut toml_edit::DocumentMut, include: Patterns) {
     set_package_array(doc, "include", include)
 }
 
-fn remove_exclude(doc: &mut toml_edit::Document) {
+fn remove_exclude(doc: &mut toml_edit::DocumentMut) {
     doc.as_table_mut()["package"]
         .as_table_mut()
         .expect("table")
@@ -253,7 +253,7 @@ fn cargo_package_content() -> Result<TarPackage> {
     }
 }
 
-fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
+fn clear_includes_and_excludes(doc: &mut toml_edit::DocumentMut) {
     let package = doc.as_table_mut()["package"].as_table_mut().expect("table");
     package.remove("exclude");
     package.remove("include");
@@ -261,7 +261,7 @@ fn clear_includes_and_excludes(doc: &mut toml_edit::Document) {
 
 fn write_manifest(
     manifest_path: &Path,
-    document: toml_edit::Document,
+    document: toml_edit::DocumentMut,
     original_manifest_content: String,
     dry_run: bool,
     mut output: impl std::io::Write,
@@ -346,7 +346,7 @@ fn check_package_size(
         for entry in package.entries_meta_data.into_iter() {
             let mut header = tar::Header::new_ustar();
             let path_without_root = tar_path_to_utf8_str(&entry.path);
-            header.set_path(&base.join(path_without_root))?;
+            header.set_path(base.join(path_without_root))?;
 
             let mut file = match std::fs::File::open(path_without_root) {
                 Ok(f) => f,
@@ -397,7 +397,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
 
     let cargo_manifest_original_content = std::fs::read_to_string(&manifest_path)?;
-    let mut document = toml_edit::Document::from_str(&cargo_manifest_original_content)?;
+    let mut document = toml_edit::DocumentMut::from_str(&cargo_manifest_original_content)?;
 
     if options.reset {
         clear_includes_and_excludes(&mut document);
