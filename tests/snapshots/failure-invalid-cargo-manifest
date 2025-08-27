@@ -1,9 +1,9 @@
-Error: TomlParse(TomlError { message: "expected `.`, `=`", original: Some("foobar\n"), keys: [], span: Some(6..7) })
+Error: TomlParse(TomlError { message: "key with no value, expected `=`", input: Some("foobar\n"), keys: [], span: Some(6..6) })
 
 Caused by:
     TOML parse error at line 1, column 7
       |
     1 | foobar
       |       ^
-    expected `.`, `=`
+    key with no value, expected `=`
     
