@@ -46,9 +46,9 @@ fn report_savings(
         out,
         "Saved {:.0}% or {} in {} files (of {} and {} files in entire crate)",
         (wasted_bytes as f32 / total_size_in_bytes as f32) * 100.0,
-        ByteSize(wasted_bytes),
+        ByteSize(wasted_bytes).display().si(),
         file_len,
-        ByteSize(total_size_in_bytes),
+        ByteSize(total_size_in_bytes).display().si(),
         total_files
     )?;
     Ok(())
@@ -375,8 +375,8 @@ fn check_package_size(
         "{}\n",
         format!(
             "The estimated actual package size of {} is within the limit of {}.",
-            ByteSize(actual_estimated_package_size),
-            ByteSize(package_size_limit)
+            ByteSize(actual_estimated_package_size).display().si(),
+            ByteSize(package_size_limit).display().si()
         )
     );
     Ok(())
@@ -462,7 +462,7 @@ fn list_entries(
         out,
         "Crate contains a total of {} files and {}",
         num_entries,
-        ByteSize(bytes)
+        ByteSize(bytes).display().si()
     )?;
     Ok(())
 }

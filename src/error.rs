@@ -20,7 +20,7 @@ quick_error! {
             source(err)
         }
         PackageSizeLimitExceeded(actual_in_bytes: u64, limit_in_bytes: u64) {
-            display("The actual estimated package size of {} exceeded the limit of {} by {}", ByteSize(*actual_in_bytes), ByteSize(*limit_in_bytes), ByteSize(actual_in_bytes.saturating_sub(*limit_in_bytes)))
+            display("The actual estimated package size of {} exceeded the limit of {} by {}", ByteSize(*actual_in_bytes).display().si(), ByteSize(*limit_in_bytes).display().si(), ByteSize(actual_in_bytes.saturating_sub(*limit_in_bytes)).display().si())
         }
         FileMetadata(err: std::io::Error, path: String) {
             display("Could not open {:?} for reading file meta-data", path)
