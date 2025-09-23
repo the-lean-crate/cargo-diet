@@ -25,7 +25,7 @@ default = []
 dev-support = ["rmp-serde"]
 
 [dependencies]
-anyhow = "1.0.72"
+anyhow = "1.0.100"
 quick-error = "2.0.1"
 locate-cargo-manifest = "0.2.2"
 toml_edit = "0.23.5"
