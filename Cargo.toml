@@ -38,7 +38,7 @@ ascii_table = "4.0.2"
 termsize = "0.1.6"
 byte-unit = "5.1.6"
 tar = "0.4.39"
-flate2 = "1.0.26"
+flate2 = "1.1.4"
 rmp-serde = { version = "1.1.2", optional = true }
 argh = "0.1.10"
 
