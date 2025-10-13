@@ -28,7 +28,7 @@ dev-support = ["rmp-serde"]
 anyhow = "1.0.100"
 quick-error = "2.0.1"
 locate-cargo-manifest = "0.2.2"
-toml_edit = "0.23.6"
+toml_edit = "0.23.7"
 bytesize = "2.1.0"
 criner-waste-report = { version = "0.1.5", default-features = false }
 ansi_term = "0.12.1"
