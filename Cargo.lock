@@ -83,9 +83,9 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
 name = "ascii_table"
-version = "4.0.8"
+version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4ef8ee0b4eedc5a877a8a768fecfabbe4c8b9791e17763225139a858dabd8e7"
+checksum = "2bcff894f0b9ba3bdd4c497c3c39df9662a0eedddf33e872ab29a3bda7167119"
 
 [[package]]
 name = "atty"
