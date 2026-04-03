@@ -25,6 +25,10 @@ mod args {
         /// if set, print the program version.
         pub version: bool,
 
+        #[argh(switch, short = 'q')]
+        /// if set, suppress all non-error output.
+        pub quiet: bool,
+
         #[argh(switch, short = 'r')]
         /// if set, existing include and exclude directives will be removed prior to running the command.
         ///
@@ -78,6 +82,7 @@ fn main() -> anyhow::Result<()> {
     let cmd = argh::from_env::<Args>().cmd;
     let Subcommands::Diet(Diet {
         version,
+        quiet,
         reset_manifest: reset,
         dry_run,
         list,
@@ -89,6 +94,11 @@ fn main() -> anyhow::Result<()> {
         println!(env!("CARGO_PKG_VERSION"));
         return Ok(());
     }
+    let output: &mut dyn std::io::Write = if quiet {
+        &mut std::io::sink()
+    } else {
+        &mut std::io::stdout().lock()
+    };
     cargo_diet::execute(
         cargo_diet::Options {
             reset,
@@ -99,7 +109,7 @@ fn main() -> anyhow::Result<()> {
             #[cfg(feature = "dev-support")]
             save_package_for_unit_test,
         },
-        std::io::stdout().lock(),
+        output,
     )?;
     Ok(())
 }
