@@ -19,6 +19,9 @@ interfering with you on subsequent invocations.
   
 * **simulate how the `Cargo.toml` file would be edited to obtain a lean crate**
   * `cargo diet -n`  or `cargo diet --dry-run`
+
+* **only print errors**
+  * `cargo diet -q` or `cargo diet --quiet`
   
 * **force computing an `include` directive even though one exists already**
   * `cargo diet -r` or `cargo diet --reset-manifest`

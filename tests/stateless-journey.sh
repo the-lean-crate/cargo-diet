@@ -39,6 +39,18 @@ function remove_bytecounts() {
       WITH_SNAPSHOT="$snapshot/failure-no-cargo-manifest" \
       expect_run ${WITH_FAILURE} "$exe" diet
     }
+
+    it "fails with the same error message with --quiet" && {
+      SNAPSHOT_FILTER=remove_paths \
+      WITH_SNAPSHOT="$snapshot/failure-no-cargo-manifest" \
+      expect_run ${WITH_FAILURE} "$exe" diet --quiet
+    }
+
+    it "fails with the same error message with -q" && {
+      SNAPSHOT_FILTER=remove_paths \
+      WITH_SNAPSHOT="$snapshot/failure-no-cargo-manifest" \
+      expect_run ${WITH_FAILURE} "$exe" diet -q
+    }
   )
   (with "with an invalid cargo project"
     echo "foobar" > Cargo.toml
@@ -88,6 +100,29 @@ function remove_bytecounts() {
 
         it "creates the file at the given path" && {
          expect_exists "${FILE_PATH}"
+        }
+      )
+    )
+  )
+
+  (sandbox
+    (with "a newly initialized cargo project"
+      step "init cargo project" &&
+        expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin
+
+      (with "the --quiet flag set"
+        it "runs successfully without producing output" && {
+          WITH_SNAPSHOT="$snapshot/success-quiet" \
+          expect_run ${SUCCESSFULLY} "$exe" diet --quiet
+        }
+
+        it "runs successfully without producing output with -q" && {
+          WITH_SNAPSHOT="$snapshot/success-quiet" \
+          expect_run ${SUCCESSFULLY} "$exe" diet -q
+        }
+
+        it "still updates Cargo.toml" && {
+          expect_snapshot "$snapshot/success-include-directive-in-new-project-cargo-toml" "Cargo.toml"
         }
       )
     )
@@ -213,6 +248,12 @@ function remove_bytecounts() {
               SNAPSHOT_FILTER=remove_bytecounts \
               WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-limit-exceeded" \
               expect_run ${WITH_FAILURE} "$exe" diet --package-size-limit 50B
+            }
+
+            it "still prints the error with -q" && {
+              SNAPSHOT_FILTER=remove_bytecounts \
+              WITH_SNAPSHOT="$snapshot/failure-package-size-limit-exceeded-quiet" \
+              expect_run ${WITH_FAILURE} "$exe" diet -q --package-size-limit 50B
             }
 
             it "does not put a file in target/package" && {
