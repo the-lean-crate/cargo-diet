@@ -97,11 +97,17 @@ fn entries_to_table(
     Ok(bytes)
 }
 
+fn ar(mut i: Patterns, r: &[String]) -> Patterns {
+    i.extend(r.iter().cloned());
+    i
+}
+
 fn edit(
     mut doc: toml_edit::DocumentMut,
     package: TarPackage,
     output: impl std::io::Write,
 ) -> Result<toml_edit::DocumentMut> {
+    let r = r(&doc);
     let report = Report::from_package(
         "crate-name does not matter",
         "crate version does not matter",
@@ -113,10 +119,12 @@ fn edit(
                 report_savings(total_size_in_bytes, total_files, wasted_files, output).ok();
                 match fix {
                     Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
-                    Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),
+                    Fix::NewInclude { include, .. } | Fix::ImprovedInclude { include, .. } => {
+                        set_include(&mut doc, ar(include, &r))
+                    }
                     Fix::RemoveExcludeAndUseInclude { include, .. }=> {
                         remove_exclude(&mut doc);
-                        set_include(&mut doc, include);
+                        set_include(&mut doc, ar(include, &r));
                     }
                     Fix::RemoveExclude => {
                         remove_exclude(&mut doc);
@@ -162,6 +170,20 @@ fn into_manifest_location_error(err: LocateManifestError) -> Error {
     } else {
         Error::LocateManifest(err)
     }
+}
+
+fn r(m: &toml_edit::DocumentMut) -> Vec<String> {
+    let r = m["package"]
+        .get("readme")
+        .and_then(|r| r.as_str())
+        .unwrap_or("");
+    fs::read_to_string(r)
+        .unwrap_or_default()
+        .split("](")
+        .skip(1)
+        .filter_map(|t| t.split(')').next())
+        .map(str::to_owned)
+        .collect()
 }
 
 fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
