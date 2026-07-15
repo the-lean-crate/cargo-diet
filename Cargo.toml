@@ -2,7 +2,7 @@
 name = "cargo-diet"
 version = "1.3.0"
 authors = ["Sebastian Thiel <byronimo@gmail.com>"]
-edition = "2018"
+edition = "2024"
 repository = "https://github.com/the-lean-crate/cargo-diet"
 include = ["src/**/*", "LICENSE.md", "README.md"]
 license = "MIT"
@@ -19,6 +19,11 @@ keywords = [
     "lean",
     "crates",
 ]
+
+[lints.rust]
+rust_2018_idioms = "warn"
+rust_2021_compatibility = "warn"
+rust_2024_compatibility = "warn"
 
 [features]
 default = []

@@ -1,14 +1,11 @@
-#[macro_use]
-extern crate quick_error;
-
-use locate_cargo_manifest::{locate_manifest, LocateManifestError};
+use locate_cargo_manifest::{LocateManifestError, locate_manifest};
 
 mod error;
 mod format_changeset;
 
 use bytesize::ByteSize;
 use criner_waste_report::{
-    tar_path_to_utf8_str, CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile,
+    CargoConfig, Fix, Patterns, Report, TarHeader, TarPackage, WastedFile, tar_path_to_utf8_str,
 };
 pub use error::Error;
 use format_changeset::format_changeset;
@@ -108,13 +105,21 @@ fn edit(
         package,
     );
     match report {
-        Report::Version { total_size_in_bytes, total_files, wasted_files, suggested_fix, .. } => {
+        Report::Version {
+            total_size_in_bytes,
+            total_files,
+            wasted_files,
+            suggested_fix,
+            ..
+        } => {
             if let Some(fix) = suggested_fix {
                 report_savings(total_size_in_bytes, total_files, wasted_files, output).ok();
                 match fix {
                     Fix::EnrichedExclude { exclude, .. } => set_exclude(&mut doc, exclude),
-                    Fix::NewInclude { include, ..} | Fix::ImprovedInclude { include, .. } => set_include(&mut doc, include),
-                    Fix::RemoveExcludeAndUseInclude { include, .. }=> {
+                    Fix::NewInclude { include, .. } | Fix::ImprovedInclude { include, .. } => {
+                        set_include(&mut doc, include)
+                    }
+                    Fix::RemoveExcludeAndUseInclude { include, .. } => {
                         remove_exclude(&mut doc);
                         set_include(&mut doc, include);
                     }
@@ -125,8 +130,10 @@ fn edit(
             } else {
                 report_lean_crate(output).ok();
             }
-        },
-        _ => unreachable!("Reports should always start out as Versions - this should probably not be necessary here"),
+        }
+        _ => unreachable!(
+            "Reports should always start out as Versions - this should probably not be necessary here"
+        ),
     };
     Ok(doc)
 }
