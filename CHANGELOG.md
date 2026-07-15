@@ -5,6 +5,92 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.1 (2026-07-15)
+
+### Chore
+
+ - <csr-id-2dffb318d3b7590dac7d6a0ac8732936a26d616d/> bump bytesize from 2.4.0 to 2.4.2
+   Bumps [bytesize](https://github.com/bytesize-rs/bytesize) from 2.4.0 to 2.4.2.
+   - [Release notes](https://github.com/bytesize-rs/bytesize/releases)
+   - [Changelog](https://github.com/bytesize-rs/bytesize/blob/master/CHANGELOG.md)
+   - [Commits](https://github.com/bytesize-rs/bytesize/compare/bytesize-v2.4.0...bytesize-v2.4.2)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: bytesize
+     dependency-version: 2.4.2
+     dependency-type: direct:production
+     update-type: version-update:semver-patch
+   ...
+ - <csr-id-a8adcc1e1c8e23de37ba255cdba56e8c7aac3615/> bump byte-unit from 5.2.3 to 5.2.5
+   Bumps [byte-unit](https://github.com/magiclen/byte-unit) from 5.2.3 to 5.2.5.
+   - [Commits](https://github.com/magiclen/byte-unit/compare/v5.2.3...v5.2.5)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: byte-unit
+     dependency-version: 5.2.5
+     dependency-type: direct:production
+     update-type: version-update:semver-patch
+   ...
+ - <csr-id-43451df2c84de4cf5dc46845913340ace2459364/> bump anyhow from 1.0.102 to 1.0.103
+   Bumps [anyhow](https://github.com/dtolnay/anyhow) from 1.0.102 to 1.0.103.
+   - [Release notes](https://github.com/dtolnay/anyhow/releases)
+   - [Commits](https://github.com/dtolnay/anyhow/compare/1.0.102...1.0.103)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: anyhow
+     dependency-version: 1.0.103
+     dependency-type: direct:production
+     update-type: version-update:semver-patch
+   ...
+
+### Refactor
+
+ - <csr-id-b2102cc15fa9b7f9f3153867a514fdd58b68c822/> use std instead of atty
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 24 commits contributed to the release.
+ - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Merge pull request #64 from 20jasper/modernize/replace-atty ([`59c4b94`](https://github.com/the-lean-crate/cargo-diet/commit/59c4b94a0b2db7afcc641ff65f08c5069171ea85))
+    - Use std instead of atty ([`b2102cc`](https://github.com/the-lean-crate/cargo-diet/commit/b2102cc15fa9b7f9f3153867a514fdd58b68c822))
+    - Merge pull request #62 from the-lean-crate/dependabot/cargo/bytesize-2.4.2 ([`cb34a80`](https://github.com/the-lean-crate/cargo-diet/commit/cb34a80f4e45af777e513b5ba01b51bc7b40b5ed))
+    - Bump bytesize from 2.4.0 to 2.4.2 ([`2dffb31`](https://github.com/the-lean-crate/cargo-diet/commit/2dffb318d3b7590dac7d6a0ac8732936a26d616d))
+    - Merge pull request #61 from the-lean-crate/dependabot/cargo/byte-unit-5.2.5 ([`218290e`](https://github.com/the-lean-crate/cargo-diet/commit/218290e4b5cedfb707fcbcb5225eb0d68ed0b553))
+    - Merge pull request #60 from the-lean-crate/dependabot/cargo/anyhow-1.0.103 ([`4be4d3d`](https://github.com/the-lean-crate/cargo-diet/commit/4be4d3df1834a545248e777ed8eaa1a8a41aab70))
+    - Bump byte-unit from 5.2.3 to 5.2.5 ([`a8adcc1`](https://github.com/the-lean-crate/cargo-diet/commit/a8adcc1e1c8e23de37ba255cdba56e8c7aac3615))
+    - Bump anyhow from 1.0.102 to 1.0.103 ([`43451df`](https://github.com/the-lean-crate/cargo-diet/commit/43451df2c84de4cf5dc46845913340ace2459364))
+    - Merge pull request #58 from the-lean-crate/dependabot/cargo/criner-waste-report-0.1.6 ([`5449bcf`](https://github.com/the-lean-crate/cargo-diet/commit/5449bcfd535afb2924184f9551bf1a972a90d2c0))
+    - Merge pull request #59 from the-lean-crate/dependabot/cargo/byte-unit-5.2.3 ([`540cd14`](https://github.com/the-lean-crate/cargo-diet/commit/540cd14da325ec8684b9251f068c9662780521d2))
+    - Merge pull request #57 from the-lean-crate/dependabot/github_actions/actions/checkout-7 ([`c3f7c49`](https://github.com/the-lean-crate/cargo-diet/commit/c3f7c49157fb8668e786ad69ed18040c101ddc47))
+    - Bump byte-unit from 5.2.0 to 5.2.3 ([`56ae9ed`](https://github.com/the-lean-crate/cargo-diet/commit/56ae9ed0d23e103814c528aaa4dcf29fcdb1d2d7))
+    - Bump criner-waste-report from 0.1.5 to 0.1.6 ([`07ae640`](https://github.com/the-lean-crate/cargo-diet/commit/07ae640827c76cdddbf81f704bcd3336982e9ad4))
+    - Bump actions/checkout from 6 to 7 ([`ae4c757`](https://github.com/the-lean-crate/cargo-diet/commit/ae4c7572a234623a4ee1fd8fb3139e99af7271c9))
+    - Merge pull request #55 from the-lean-crate/dependabot/cargo/toml_edit-0.25.12spec-1.1.0 ([`b6b1a07`](https://github.com/the-lean-crate/cargo-diet/commit/b6b1a07d6ee7aefebe18969e3a85283cbe74eaab))
+    - Merge pull request #56 from the-lean-crate/dependabot/cargo/bytesize-2.4.0 ([`3418ecc`](https://github.com/the-lean-crate/cargo-diet/commit/3418ecc739928e2c4967b365ddb6c40d20232ee5))
+    - Bump bytesize from 2.3.1 to 2.4.0 ([`ddaea70`](https://github.com/the-lean-crate/cargo-diet/commit/ddaea70183c2b6eb2a3216b8762b11174228731c))
+    - Bump toml_edit from 0.25.11+spec-1.1.0 to 0.25.12+spec-1.1.0 ([`d362c03`](https://github.com/the-lean-crate/cargo-diet/commit/d362c03cd0d3cff32a416fbf494471ae605b1e2b))
+    - Merge pull request #53 from the-lean-crate/dependabot/cargo/tar-0.4.46 ([`b36982c`](https://github.com/the-lean-crate/cargo-diet/commit/b36982ca084b66c0fe1f192be20120e5307891d2))
+    - Bump tar from 0.4.45 to 0.4.46 ([`13a8c41`](https://github.com/the-lean-crate/cargo-diet/commit/13a8c412af735c0a6a15993e8f71e2eb16a0297d))
+    - Merge pull request #51 from the-lean-crate/dependabot/cargo/toml_edit-0.25.11spec-1.1.0 ([`810110c`](https://github.com/the-lean-crate/cargo-diet/commit/810110cf60a114915e4ca3edbc67cc0e51428eb1))
+    - Bump toml_edit from 0.25.10+spec-1.1.0 to 0.25.11+spec-1.1.0 ([`d35291e`](https://github.com/the-lean-crate/cargo-diet/commit/d35291e8f86cb115806c5e753ed3398fe06443ff))
+    - Merge pull request #50 from the-lean-crate/dependabot/cargo/toml_edit-0.25.10spec-1.1.0 ([`b9c0f61`](https://github.com/the-lean-crate/cargo-diet/commit/b9c0f618bd27e4824a00090442fce8ad273a8cc4))
+    - Bump toml_edit from 0.25.8+spec-1.1.0 to 0.25.10+spec-1.1.0 ([`a372f5d`](https://github.com/the-lean-crate/cargo-diet/commit/a372f5dae622ec9c73927f9073fa508191a3c809))
+</details>
+
 ## 1.3.0 (2026-04-04)
 
 ### Chore
@@ -19,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 71 commits contributed to the release.
+ - 72 commits contributed to the release.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -30,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.3.0 ([`92010ae`](https://github.com/the-lean-crate/cargo-diet/commit/92010ae43e75ef89a227e9f690d19bbb90e0586c))
     - Merge pull request #49 from 20jasper/quiet-flag ([`cf36d4c`](https://github.com/the-lean-crate/cargo-diet/commit/cf36d4cf4906047e3c88bb7c7bfbd8a6749e1ef0))
     - Add --quiet flag ([`849162e`](https://github.com/the-lean-crate/cargo-diet/commit/849162e48a9c0f33cbe6fed1d6c8b40d4100f350))
     - Merge pull request #47 from the-lean-crate/dependabot/cargo/tar-0.4.45 ([`78c4827`](https://github.com/the-lean-crate/cargo-diet/commit/78c4827b695518e1927427e7239b4f052a70e859))
