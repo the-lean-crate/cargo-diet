@@ -77,7 +77,7 @@ fn entries_to_table(
         .set_header("Size (Byte)")
         .set_align(Align::Right);
 
-    entries.sort_by(|x, y| y.1.cmp(&x.1));
+    entries.sort_by_key(|x| std::cmp::Reverse(x.1));
     let bytes: u64 = entries
         .iter()
         .take(items.unwrap_or(entries.len()))
