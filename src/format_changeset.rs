@@ -136,6 +136,7 @@ pub fn format_changeset(
                 let skipped_lines_note = lines_of(&diffs[l])
                     .count()
                     .checked_sub(context)
+                    .filter(|&skipped| skipped > 0)
                     .map(|skipped| format!("[…skipped {} lines…]", skipped));
                 (None, lines_of(&diffs[l]).take(context), skipped_lines_note)
             }),
