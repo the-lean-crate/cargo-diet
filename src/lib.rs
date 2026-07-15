@@ -306,7 +306,7 @@ fn write_manifest(
         format_changeset(
             output,
             with_color,
-            &difference::Changeset::new(&original_manifest_content, &edit, "\n"),
+            &format_changeset::diff_lines(&original_manifest_content, &edit),
         )?
     };
     Ok(())
