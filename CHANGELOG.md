@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.3.2 (2026-07-15)
+
+### Chore
+
+ - <csr-id-272b576ecbc0c9a6e294b78bd9dd667bd8a79c13/> add missing redirect for latest crate resolution
+ - <csr-id-ed3a81795f2b5d5d56cdb59d1ec60d4c4665bfaa/> update rust actions and permissons
+ - <csr-id-52a414fe41ae80240adfa467e7a360c9104143ab/> fix clippy lint
+
+### Bug Fixes
+
+ - <csr-id-3c5dfb93273d961a76c0fb6abccf8d04760c5702/> remove skipped directive when no lines are skipped
+
+### Refactor
+
+ - <csr-id-6f11cbf5af987d1bf8f80eca986f83370881db4e/> swap from difference to similar crate
+
+### Test
+
+ - <csr-id-c0cc2e6b1c4392cfe0feb6635202e6d7592da667/> rename stale test names
+ - <csr-id-2823159648c0d123b81d8f9d55025c7000d3e430/> truncates unchanged lines
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 14 commits contributed to the release.
+ - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Merge pull request #68 from 20jasper/chore/replace-difference-with-similar ([`5163811`](https://github.com/the-lean-crate/cargo-diet/commit/516381139c102e7f19028a86b267926d52e777c1))
+    - Review ([`4a1634b`](https://github.com/the-lean-crate/cargo-diet/commit/4a1634bc5d1203b4916fd20cec7f5f919a4f4d58))
+    - Rename stale test names ([`c0cc2e6`](https://github.com/the-lean-crate/cargo-diet/commit/c0cc2e6b1c4392cfe0feb6635202e6d7592da667))
+    - Remove skipped directive when no lines are skipped ([`3c5dfb9`](https://github.com/the-lean-crate/cargo-diet/commit/3c5dfb93273d961a76c0fb6abccf8d04760c5702))
+    - Truncates unchanged lines ([`2823159`](https://github.com/the-lean-crate/cargo-diet/commit/2823159648c0d123b81d8f9d55025c7000d3e430))
+    - Swap from difference to similar crate ([`6f11cbf`](https://github.com/the-lean-crate/cargo-diet/commit/6f11cbf5af987d1bf8f80eca986f83370881db4e))
+    - Merge pull request #67 from 20jasper/chore/fix-latest-tag-resolution ([`8723d49`](https://github.com/the-lean-crate/cargo-diet/commit/8723d4923426256ac8876e7077f8f4e350425e77))
+    - Add missing redirect for latest crate resolution ([`272b576`](https://github.com/the-lean-crate/cargo-diet/commit/272b576ecbc0c9a6e294b78bd9dd667bd8a79c13))
+    - Merge pull request #66 from 20jasper/ci/modernize-actions ([`368ac07`](https://github.com/the-lean-crate/cargo-diet/commit/368ac07d4f1d4691d75547ac6b9a9b67b53c3618))
+    - Update rust actions and permissons ([`ed3a817`](https://github.com/the-lean-crate/cargo-diet/commit/ed3a81795f2b5d5d56cdb59d1ec60d4c4665bfaa))
+    - Merge pull request #65 from 20jasper/chore/fix-clippy-lint ([`b55065a`](https://github.com/the-lean-crate/cargo-diet/commit/b55065aaab67dae8fedbbfcec4c62eedd46097f9))
+    - Fix clippy lint ([`52a414f`](https://github.com/the-lean-crate/cargo-diet/commit/52a414fe41ae80240adfa467e7a360c9104143ab))
+    - Merge pull request #63 from 20jasper/modernize/edition-2024 ([`1aecbb7`](https://github.com/the-lean-crate/cargo-diet/commit/1aecbb789d201331a0062be88ff6672ec55e2b1d))
+    - Review ([`8ce6e2e`](https://github.com/the-lean-crate/cargo-diet/commit/8ce6e2e0f02a3d5580e363ac4bfe2fdf381ba299))
+</details>
+
 ## 1.3.1 (2026-07-15)
 
 ### Chore
@@ -18,9 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: bytesize
-     dependency-version: 2.4.2
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 2.4.2
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-a8adcc1e1c8e23de37ba255cdba56e8c7aac3615/> bump byte-unit from 5.2.3 to 5.2.5
    Bumps [byte-unit](https://github.com/magiclen/byte-unit) from 5.2.3 to 5.2.5.
@@ -29,9 +81,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: byte-unit
-     dependency-version: 5.2.5
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 5.2.5
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-43451df2c84de4cf5dc46845913340ace2459364/> bump anyhow from 1.0.102 to 1.0.103
    Bumps [anyhow](https://github.com/dtolnay/anyhow) from 1.0.102 to 1.0.103.
@@ -41,10 +93,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: anyhow
-     dependency-version: 1.0.103
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 1.0.103
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
+ - <csr-id-5c6299806820ce0a1bf626cd68c487c994c2c6e0/> update to rust 2024 edition
 
 ### Refactor
 
@@ -54,8 +107,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 24 commits contributed to the release.
- - 4 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 26 commits contributed to the release.
+ - 102 days passed between releases.
+ - 5 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -65,7 +119,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.3.1 ([`acaac22`](https://github.com/the-lean-crate/cargo-diet/commit/acaac22daf482f506d2d1ed9191db4d9c3a69c29))
     - Merge pull request #64 from 20jasper/modernize/replace-atty ([`59c4b94`](https://github.com/the-lean-crate/cargo-diet/commit/59c4b94a0b2db7afcc641ff65f08c5069171ea85))
+    - Update to rust 2024 edition ([`5c62998`](https://github.com/the-lean-crate/cargo-diet/commit/5c6299806820ce0a1bf626cd68c487c994c2c6e0))
     - Use std instead of atty ([`b2102cc`](https://github.com/the-lean-crate/cargo-diet/commit/b2102cc15fa9b7f9f3153867a514fdd58b68c822))
     - Merge pull request #62 from the-lean-crate/dependabot/cargo/bytesize-2.4.2 ([`cb34a80`](https://github.com/the-lean-crate/cargo-diet/commit/cb34a80f4e45af777e513b5ba01b51bc7b40b5ed))
     - Bump bytesize from 2.4.0 to 2.4.2 ([`2dffb31`](https://github.com/the-lean-crate/cargo-diet/commit/2dffb318d3b7590dac7d6a0ac8732936a26d616d))
@@ -106,6 +162,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <csr-read-only-do-not-edit/>
 
  - 72 commits contributed to the release.
+ - 985 days passed between releases.
  - 2 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -226,6 +283,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
+ - 129 days passed between releases.
  - 1 commit was understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -252,6 +310,7 @@ Update dependencies in this maintenance release.
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
+ - 337 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -336,7 +395,7 @@ Re-release with no functional changes, but a nicer changelog.
 <csr-read-only-do-not-edit/>
 
  - 5 commits contributed to the release.
- - 20 days passed between releases.
+ - 21 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -422,7 +481,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 2 commits contributed to the release over the course of 12 calendar days.
- - 22 days passed between releases.
+ - 23 days passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -502,6 +561,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 6 commits contributed to the release.
+ - 1 day passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -560,6 +620,7 @@ Use more generous exclude globs.
 <csr-read-only-do-not-edit/>
 
  - 10 commits contributed to the release.
+ - 1 day passed between releases.
  - 0 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
