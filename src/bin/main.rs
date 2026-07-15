@@ -77,6 +77,7 @@ mod args {
 }
 
 use args::{Args, Diet, Subcommands};
+use std::io::IsTerminal;
 
 fn main() -> anyhow::Result<()> {
     let cmd = argh::from_env::<Args>().cmd;
@@ -103,7 +104,7 @@ fn main() -> anyhow::Result<()> {
         cargo_diet::Options {
             reset,
             dry_run,
-            colored_output: atty::is(atty::Stream::Stdout),
+            colored_output: std::io::stdout().is_terminal(),
             list,
             package_size_limit,
             #[cfg(feature = "dev-support")]
