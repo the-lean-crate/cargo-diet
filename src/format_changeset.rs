@@ -129,20 +129,74 @@ pub fn format_changeset(
     }
 
     {
-        let hunk_after_last_change =
-            last_changed_hunk.map(|l| (l + 1).min(diffs.len().saturating_sub(1)));
+        let hunk_after_last_change = last_changed_hunk.and_then(|l| diffs.get(l + 1));
         print_context(
-            hunk_after_last_change.map(|l| {
-                let skipped_lines_note = lines_of(&diffs[l])
+            hunk_after_last_change.map(|diff| {
+                let skipped_lines_note = lines_of(diff)
                     .count()
                     .checked_sub(context)
                     .filter(|&skipped| skipped > 0)
                     .map(|skipped| format!("[…skipped {} lines…]", skipped));
-                (None, lines_of(&diffs[l]).take(context), skipped_lines_note)
+                (None, lines_of(diff).take(context), skipped_lines_note)
             }),
             &mut t,
             use_color,
         )?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn format_diff(old: &str, new: &str) -> String {
+        let mut output = Vec::new();
+        format_changeset(&mut output, false, &diff_lines(old, new)).unwrap();
+        String::from_utf8(output).unwrap()
+    }
+
+    #[test]
+    fn does_not_repeat_an_insertion_at_eof_as_context() {
+        let output = format_diff(
+            "[package]
+name = \"example\"
+",
+            "[package]
+name = \"example\"
+include = [\"src/**/*\"]
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+[package]
+name = \"example\"
++include = [\"src/**/*\"]
+"
+        );
+    }
+
+    #[test]
+    fn does_not_repeat_a_deletion_at_eof_as_context() {
+        let output = format_diff(
+            "[package]
+name = \"example\"
+include = [\"src/**/*\"]
+",
+            "[package]
+name = \"example\"
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+[package]
+name = \"example\"
+-include = [\"src/**/*\"]
+"
+        );
+    }
 }
