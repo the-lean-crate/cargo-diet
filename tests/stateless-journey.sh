@@ -301,3 +301,23 @@ function remove_bytecounts() {
     )
   )
 )
+
+(sandbox
+  (with "a newly initialized cargo project with several dependencies"
+    step "init cargo project" &&
+      expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin
+
+    printf 'rust = "1"\nis = "1"\na = "1"\nmust = "1"\n' >> Cargo.toml
+
+    (with "a new test file which is part of the src/ directory"
+      touch src/lib_test.rs
+
+      (with "the -n (dry-run) flag set"
+        it "reports a truncated lines" && {
+          WITH_SNAPSHOT="$snapshot/success-include-directive-trailing-context-dry-run" \
+          expect_run ${SUCCESSFULLY} "$exe" diet -n
+        }
+      )
+    )
+  )
+)

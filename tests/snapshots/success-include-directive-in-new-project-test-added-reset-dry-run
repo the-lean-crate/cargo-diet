@@ -14,4 +14,3 @@ edition = "2018"
 +include = ["src/**/*", "README.md", "!**/*_test.*"]
 
 [dependencies]
-[…skipped 0 lines…]

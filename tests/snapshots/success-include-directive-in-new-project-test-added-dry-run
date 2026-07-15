@@ -13,4 +13,3 @@ edition = "2018"
 +include = ["src/**/*", "!**/*_test.*"]
 
 [dependencies]
-[…skipped 0 lines…]
