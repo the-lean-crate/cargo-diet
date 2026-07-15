@@ -33,4 +33,4 @@ jobs:
     - name: fmt
       run: cargo fmt --all -- --check
     - name: clippy
-      run: cargo clippy
+      run: cargo clippy --all-targets -- -D warnings
