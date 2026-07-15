@@ -6,23 +6,33 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
 
     runs-on: ubuntu-latest
     env:
       SIZE_LIMIT: 10KB
+      CARGO_TERM_COLOR: never
     steps:
     - uses: actions/checkout@v7
+      with:
+        persist-credentials: false
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master
+      with:
+        toolchain: stable
+        components: clippy, rustfmt
+    - name: Cache cargo and target
+      uses: Swatinem/rust-cache@42dc69e1aa15d09112580998cf2ef0119e2e91ae # v2
     - name: Run tests
       run: make tests
     - name: Check crate package size
       run: cargo run -- diet --dry-run --package-size-limit ${{ env.SIZE_LIMIT }}
     - name: Check crate package size (with install action)
-      uses: actions-rs/install@v0.1.2
-      with:
-        crate: cargo-diet
-        version: latest
+      run: cargo install cargo-diet --locked
     - name: Check crate package size (with latest binary)
       run: |
         curl -LSfs https://raw.githubusercontent.com/the-lean-crate/cargo-diet/master/ci/install.sh | \
