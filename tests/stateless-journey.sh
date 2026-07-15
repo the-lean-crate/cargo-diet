@@ -210,7 +210,7 @@ function remove_bytecounts() {
         (with "the --reset-manifest flag set"
           (with "the --dry-run flag set"
             it "runs successfully" && {
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-reset-dry-run" \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-readme-reset-dry-run" \
               expect_run ${SUCCESSFULLY} "$exe" diet --reset-manifest --dry-run
             }
 
@@ -221,7 +221,7 @@ function remove_bytecounts() {
 
           (with "NO --dry-run flag set"
             it "runs successfully" && {
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-no-dryrun" \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-readme-reset-no-dryrun" \
               expect_run ${SUCCESSFULLY} "$exe" diet -r
             }
 
