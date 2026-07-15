@@ -4,7 +4,7 @@
 //! (License MIT)
 use ansi_term::Colour::{Green, Red};
 use ansi_term::Style;
-use difference::{Changeset, Difference};
+use similar::{ChangeTag, TextDiff};
 
 #[macro_export]
 macro_rules! paint {
@@ -20,11 +20,26 @@ macro_rules! paint {
 const SIGN_RIGHT: char = '+'; // + > →
 const SIGN_LEFT: char = '-'; // - < ←
 
-fn lines_of(d: &Difference) -> impl Iterator<Item = &str> {
-    let buf = match d {
-        Difference::Same(b) | Difference::Rem(b) | Difference::Add(b) => b,
-    };
-    buf.split('\n')
+type Run = (ChangeTag, String);
+
+pub fn diff_lines(old: &str, new: &str) -> Vec<Run> {
+    let diff = TextDiff::from_lines(old, new);
+    let changes: Vec<_> = diff.iter_all_changes().collect();
+    changes
+        .chunk_by(|a, b| a.tag() == b.tag())
+        .map(|run| {
+            let text = run
+                .iter()
+                .map(|change| change.value().trim_end_matches('\n'))
+                .collect::<Vec<_>>()
+                .join("\n");
+            (run[0].tag(), text)
+        })
+        .collect()
+}
+
+fn lines_of(d: &Run) -> impl Iterator<Item = &str> {
+    d.1.split('\n')
 }
 
 fn print_context<'a>(
@@ -56,10 +71,8 @@ fn print_context<'a>(
 pub fn format_changeset(
     mut t: impl std::io::Write,
     use_color: bool,
-    changeset: &Changeset,
+    diffs: &[Run],
 ) -> std::io::Result<()> {
-    let diffs = &changeset.diffs;
-
     if use_color {
         writeln!(
             t,
@@ -72,7 +85,7 @@ pub fn format_changeset(
         writeln!(t, "Diff {SIGN_LEFT} removed / added {SIGN_RIGHT} :",)?;
     }
 
-    let is_different = |d: &_| !matches!(d, Difference::Same(_));
+    let is_different = |d: &Run| d.0 != ChangeTag::Equal;
 
     let first_changed_hunk = diffs.iter().position(is_different);
     let last_changed_hunk = diffs.iter().rposition(is_different);
@@ -98,22 +111,17 @@ pub fn format_changeset(
         )?;
     }
 
-    if let (Some(first_changed_hunk), Some(last_changed_hunk)) =
-        (first_changed_hunk, last_changed_hunk)
+    if let Some((first_changed_hunk, last_changed_hunk)) = first_changed_hunk.zip(last_changed_hunk)
     {
-        for diff in diffs
-            .iter()
-            .take(last_changed_hunk + 1)
-            .skip(first_changed_hunk)
-        {
+        for diff in &diffs[first_changed_hunk..=last_changed_hunk] {
             match diff {
-                Difference::Same(x) => {
+                (ChangeTag::Equal, x) => {
                     writeln!(t, " {}", x)?;
                 }
-                Difference::Add(x) => {
+                (ChangeTag::Insert, x) => {
                     paint!(t, use_color, Green, "{}{}\n", SIGN_RIGHT, x);
                 }
-                Difference::Rem(x) => {
+                (ChangeTag::Delete, x) => {
                     paint!(t, use_color, Red, "{}{}\n", SIGN_LEFT, x);
                 }
             }
@@ -121,19 +129,74 @@ pub fn format_changeset(
     }
 
     {
-        let hunk_after_last_change =
-            last_changed_hunk.map(|l| (l + 1).min(diffs.len().saturating_sub(1)));
+        let hunk_after_last_change = last_changed_hunk.and_then(|l| diffs.get(l + 1));
         print_context(
-            hunk_after_last_change.map(|l| {
-                let skipped_lines_note = lines_of(&diffs[l])
+            hunk_after_last_change.map(|diff| {
+                let skipped_lines_note = lines_of(diff)
                     .count()
                     .checked_sub(context)
+                    .filter(|&skipped| skipped > 0)
                     .map(|skipped| format!("[…skipped {} lines…]", skipped));
-                (None, lines_of(&diffs[l]).take(context), skipped_lines_note)
+                (None, lines_of(diff).take(context), skipped_lines_note)
             }),
             &mut t,
             use_color,
         )?;
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn format_diff(old: &str, new: &str) -> String {
+        let mut output = Vec::new();
+        format_changeset(&mut output, false, &diff_lines(old, new)).unwrap();
+        String::from_utf8(output).unwrap()
+    }
+
+    #[test]
+    fn does_not_repeat_an_insertion_at_eof_as_context() {
+        let output = format_diff(
+            "[package]
+name = \"example\"
+",
+            "[package]
+name = \"example\"
+include = [\"src/**/*\"]
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+[package]
+name = \"example\"
++include = [\"src/**/*\"]
+"
+        );
+    }
+
+    #[test]
+    fn does_not_repeat_a_deletion_at_eof_as_context() {
+        let output = format_diff(
+            "[package]
+name = \"example\"
+include = [\"src/**/*\"]
+",
+            "[package]
+name = \"example\"
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+[package]
+name = \"example\"
+-include = [\"src/**/*\"]
+"
+        );
+    }
 }

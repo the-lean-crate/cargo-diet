@@ -5,7 +5,7 @@
 └─────────────────┴─────────────┘
 Saved 0% or 0 B in 1 files (of 123 B and 4 files in entire crate)
 
-The following change WOULD be made to Cargo.toml:
+The following change was made to Cargo.toml:
 Diff - removed / added + :
 […skipped 2 lines…]
 version = "0.1.0"
@@ -14,4 +14,3 @@ edition = "2018"
 +include = ["src/**/*", "README.md", "!**/*_test.*"]
 
 [dependencies]
-[…skipped 1 lines…]

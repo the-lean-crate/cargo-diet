@@ -14,7 +14,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      SIZE_LIMIT: 10KB
+      SIZE_LIMIT: 11KB
       CARGO_TERM_COLOR: never
     steps:
     - uses: actions/checkout@v7

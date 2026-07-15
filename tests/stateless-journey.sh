@@ -210,7 +210,7 @@ function remove_bytecounts() {
         (with "the --reset-manifest flag set"
           (with "the --dry-run flag set"
             it "runs successfully" && {
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-reset-dry-run" \
+              WITH_SNAPSHOT="$snapshot/success-in-new-project-readme-reset-dry-run" \
               expect_run ${SUCCESSFULLY} "$exe" diet --reset-manifest --dry-run
             }
 
@@ -221,7 +221,7 @@ function remove_bytecounts() {
 
           (with "NO --dry-run flag set"
             it "runs successfully" && {
-              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-test-added-no-dryrun" \
+              WITH_SNAPSHOT="$snapshot/success-include-directive-in-new-project-readme-reset-no-dryrun" \
               expect_run ${SUCCESSFULLY} "$exe" diet -r
             }
 
@@ -297,6 +297,26 @@ function remove_bytecounts() {
             }
           )
         )
+      )
+    )
+  )
+)
+
+(sandbox
+  (with "a newly initialized cargo project with several dependencies"
+    step "init cargo project" &&
+      expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin
+
+    printf 'rust = "1"\nis = "1"\na = "1"\nmust = "1"\n' >> Cargo.toml
+
+    (with "a new test file which is part of the src/ directory"
+      touch src/lib_test.rs
+
+      (with "the -n (dry-run) flag set"
+        it "reports a truncated lines" && {
+          WITH_SNAPSHOT="$snapshot/success-include-directive-trailing-context-dry-run" \
+          expect_run ${SUCCESSFULLY} "$exe" diet -n
+        }
       )
     )
   )
