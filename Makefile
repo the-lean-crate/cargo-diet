@@ -8,11 +8,14 @@ help:  ## Display this help
 
 always:
 
-tests: journey-tests check ## Run all tests
+tests: unit-tests journey-tests check ## Run all tests
 
 check: ## Compile all relevant configurations of feature flags
 	cargo check
 	cargo check --features dev-support
+
+unit-tests: ## Run cargo's own unit tests
+	cargo test --features dev-support
 
 target/debug/cargo-diet: always
 	cargo build --features dev-support
