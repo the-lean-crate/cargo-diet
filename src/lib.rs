@@ -13,6 +13,7 @@ use std::{
     io::{BufRead, BufReader, Cursor},
     path::{Path, PathBuf},
     str::FromStr,
+    sync::atomic::{AtomicUsize, Ordering},
 };
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -413,22 +414,41 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
     }
 
     let multiple_targets = targets.len() > 1;
-    let options = &options;
-    let results: Vec<(&workspace::Target, Vec<u8>, Result<()>)> = std::thread::scope(|scope| {
-        targets
-            .iter()
-            .map(|target| {
-                scope.spawn(move || {
-                    let mut buf = Vec::new();
-                    let result = execute_for_target(options, target, &mut buf);
-                    (target, buf, result)
+    let results: Vec<(&workspace::Target, Vec<u8>, Result<()>)> = {
+        let options = &options;
+        let parallelism = std::thread::available_parallelism().map_or(1, |count| count.get());
+        let next = AtomicUsize::new(0);
+        std::thread::scope(|scope| {
+            let workers = (0..parallelism.min(targets.len()))
+                .map(|_| {
+                    let next = &next;
+                    let targets = &targets;
+                    scope.spawn(move || {
+                        let mut results = Vec::new();
+                        loop {
+                            let index = next.fetch_add(1, Ordering::Relaxed);
+                            let Some(target) = targets.get(index) else {
+                                break;
+                            };
+                            let mut buf = Vec::new();
+                            let result = execute_for_target(options, target, &mut buf);
+                            results.push((index, target, buf, result));
+                        }
+                        results
+                    })
                 })
-            })
-            .collect::<Vec<_>>()
-            .into_iter()
-            .map(|handle| handle.join().expect("worker thread panicked"))
-            .collect()
-    });
+                .collect::<Vec<_>>();
+            let mut results = workers
+                .into_iter()
+                .flat_map(|worker| worker.join().expect("worker thread panicked"))
+                .collect::<Vec<_>>();
+            results.sort_unstable_by_key(|(index, ..)| *index);
+            results
+                .into_iter()
+                .map(|(_, target, buf, result)| (target, buf, result))
+                .collect()
+        })
+    };
 
     let mut errors = Vec::new();
     for (idx, (target, buf, result)) in results.into_iter().enumerate() {
