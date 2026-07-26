@@ -36,7 +36,11 @@ pub fn select_targets(options: &Options) -> Result<Vec<Target>> {
     let document = toml_edit::DocumentMut::from_str(&std::fs::read_to_string(&manifest_path)?)?;
     let is_virtual_manifest = !document.contains_key("package");
 
-    let targets = if options.workspace || !options.packages.is_empty() || is_virtual_manifest {
+    let targets = if options.workspace
+        || !options.packages.is_empty()
+        || is_virtual_manifest
+        || document.contains_key("workspace")
+    {
         let metadata = fetch(&manifest_path)?;
         resolve_targets(options, &metadata)?
     } else {
