@@ -213,6 +213,7 @@ dependencies = [
  "bytesize",
  "criner-waste-report",
  "flate2",
+ "json",
  "locate-cargo-manifest",
  "quick-error",
  "rmp-serde",

@@ -303,6 +303,152 @@ function remove_bytecounts() {
 )
 
 (sandbox
+  (with "a cargo workspace whose members are declared via a glob, one of which needs a leaner include directive"
+    step "set up workspace" && {
+      cat <<EOF > Cargo.toml
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+EOF
+      workspace_member crates/crate-a crate-a
+      workspace_member crates/crate-b crate-b
+      touch crates/crate-b/src/lib_test.rs
+    }
+
+    (when "running it at the workspace root with no package selection flags"
+      it "processes every workspace member, mirroring cargo's own default-members behavior" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-default-members" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n
+      }
+    )
+
+    (when "running it with -p crate-a"
+      it "only processes the selected package" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-dash-p" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n -p crate-a
+      }
+    )
+
+    (when "running it with -p pointing at a package that does not exist"
+      it "fails with a cargo-like error message" && {
+        WITH_SNAPSHOT="$snapshot/failure-workspace-unknown-package" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n -p does-not-exist
+      }
+    )
+
+    (when "running it from within a workspace member directory, with no flags"
+      it "still only touches that one member, as it did before workspaces were supported" && (
+        cd crates/crate-a
+        WITH_SNAPSHOT="$snapshot/success-workspace-member-cwd-no-flags" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n
+      )
+    )
+
+    (when "running it with --save-package-for-unit-test and more than one package selected"
+      it "refuses, since that flag can only write a single package description" && {
+        WITH_SNAPSHOT="$snapshot/failure-workspace-save-package-with-multiple-targets" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n --workspace --save-package-for-unit-test out.rmp
+      }
+    )
+
+    (when "running it with -p crate-b --workspace together"
+      it "lets --workspace silently override -p, just like cargo itself does" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-overrides-dash-p" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n -p crate-b --workspace
+      }
+    )
+
+    (when "running it with --workspace --exclude crate-b"
+      it "processes every member except the excluded one" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-excluding-member" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n --workspace --exclude crate-b
+      }
+    )
+
+    (when "running it with --exclude but without --workspace"
+      it "fails just like cargo itself does in this case" && {
+        WITH_SNAPSHOT="$snapshot/failure-workspace-exclude-without-workspace-flag" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n --exclude crate-b
+      }
+    )
+
+    (when "running it with --workspace, excluding every member"
+      it "fails instead of silently doing nothing, just like cargo itself does in this case" && {
+        WITH_SNAPSHOT="$snapshot/failure-workspace-excludes-everything" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n --workspace --exclude crate-a --exclude crate-b
+      }
+    )
+
+    (when "running it with --workspace and a --package-size-limit that crate-a exceeds"
+      it "names the offending package in the error, since with several packages in play that's no longer obvious" && {
+        SNAPSHOT_FILTER=remove_bytecounts \
+        WITH_SNAPSHOT="$snapshot/failure-workspace-package-size-limit-names-package" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n --workspace --package-size-limit 1B
+      }
+    )
+  )
+)
+
+(sandbox
+  (with "a cargo workspace with explicit member paths and several subcrates, two of which need a leaner include directive"
+    step "set up workspace" && {
+      cat <<EOF > Cargo.toml
+[workspace]
+members = ["pkg-one", "pkg-two", "pkg-three"]
+resolver = "2"
+EOF
+      workspace_member pkg-one pkg-one
+      touch pkg-one/src/lib_test.rs
+
+      workspace_member pkg-two pkg-two
+      touch pkg-two/src/lib_test.rs
+
+      workspace_member pkg-three pkg-three
+    }
+
+    (when "running it with --workspace, with NO --dry-run flag set"
+      it "runs successfully and reports each package in turn" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-multiple-members-modified" \
+        expect_run ${SUCCESSFULLY} "$exe" diet --workspace
+      }
+
+      it "adds the include directive to pkg-one's manifest" && {
+        expect_snapshot "$snapshot/success-workspace-pkg-one-cargo-toml" "pkg-one/Cargo.toml"
+      }
+
+      it "adds the include directive to pkg-two's manifest" && {
+        expect_snapshot "$snapshot/success-workspace-pkg-two-cargo-toml" "pkg-two/Cargo.toml"
+      }
+
+      it "leaves pkg-three's manifest untouched, since it was already lean" && {
+        expect_snapshot "$snapshot/success-workspace-pkg-three-cargo-toml" "pkg-three/Cargo.toml"
+      }
+    )
+  )
+)
+
+(sandbox
+  (with "a cargo workspace that explicitly declares no default members"
+    step "set up workspace" && {
+      cat <<EOF > Cargo.toml
+[workspace]
+members = ["crate-a"]
+default-members = []
+resolver = "2"
+EOF
+      workspace_member crate-a crate-a
+    }
+
+    (when "running it at the workspace root with no package selection flags"
+      it "fails, since cargo itself packages nothing in this case rather than falling back to every member" && {
+        WITH_SNAPSHOT="$snapshot/failure-workspace-empty-default-members" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n
+      }
+    )
+  )
+)
+
+(sandbox
   (with "a newly initialized cargo project with several dependencies"
     step "init cargo project" &&
       expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin

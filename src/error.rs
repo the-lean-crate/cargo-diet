@@ -1,5 +1,6 @@
 use bytesize::ByteSize;
 use quick_error::quick_error;
+use std::path::PathBuf;
 
 quick_error! {
     #[derive(Debug)]
@@ -35,5 +36,39 @@ quick_error! {
         LocateManifestExecution(msg: String) {
             display("{}", msg)
         }
+        CargoMetadataError(msg: String) {
+            display("{}", msg)
+        }
+        ExpectedMetadataField(field: &'static str, cargo_version: String) {
+            display("`cargo metadata` missing expected `{}` field. This may mean an outdated cargo version (found: {})", field, cargo_version)
+        }
+        PackageSpecNotFound(spec: String) {
+            display("`{}` did not match any packages", spec)
+        }
+        MissingPackageName(manifest_path: PathBuf) {
+            display("{:?} is missing the required `package.name` field", manifest_path)
+        }
+        JsonParse(err: json::Error) {
+            from()
+            source(err)
+        }
+    }
+}
+
+impl Error {
+    pub(crate) fn message(msg: impl Into<String>) -> Error {
+        Error::Message(msg.into())
+    }
+
+    pub(crate) fn describe_with_chain(&self) -> String {
+        use std::error::Error as _;
+        let mut description = self.to_string();
+        let mut source = self.source();
+        while let Some(err) = source {
+            description.push_str("\n\nCaused by:\n    ");
+            description.push_str(&err.to_string());
+            source = err.source();
+        }
+        description
     }
 }

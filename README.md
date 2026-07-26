@@ -30,8 +30,14 @@ interfering with you on subsequent invocations.
 * **prevent the crate from exceeding a certain package size (best on CI)**
   * `cargo diet -n --package-size-limit 50KB`
   * See the installation instructions specifically for CI, allowing to quickly download a pre-built binary
-  
-  
+
+* **make the workspace lean**
+  * `cargo diet` falls back to the workspace's default members
+  * make a specific package lean: `cargo diet -p my-crate`
+  * make every package lean: `cargo diet --workspace`
+  * make every package lean except a few: `cargo diet --workspace --exclude my-crate`
+
+
 ### Installation
 
 #### Using Cargo

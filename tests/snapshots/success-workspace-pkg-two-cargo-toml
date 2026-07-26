@@ -1,0 +1,5 @@
+[package]
+name = "pkg-two"
+version = "0.1.0"
+edition = "2021"
+include = ["src/**/*", "!**/*_test.*"]
