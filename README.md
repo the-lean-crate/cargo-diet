@@ -36,6 +36,7 @@ interfering with you on subsequent invocations.
   * make a specific package lean: `cargo diet -p my-crate`
   * make every package lean: `cargo diet --workspace`
   * make every package lean except a few: `cargo diet --workspace --exclude my-crate`
+  * skip private packages with `cargo diet --workspace --ignore-private`
 
 
 ### Installation

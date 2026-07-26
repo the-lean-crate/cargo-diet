@@ -69,6 +69,10 @@ mod args {
         /// exclude the package when `--workspace` is set
         pub exclude: Vec<String>,
 
+        #[argh(switch)]
+        /// skip packages explicitly marked as private
+        pub ignore_private: bool,
+
         #[argh(option)]
         #[cfg(feature = "dev-support")]
         /// if set, this specifies the path at which a package description for use in criner-waste-report tests should be written to.
@@ -103,6 +107,7 @@ fn main() -> anyhow::Result<()> {
         package,
         workspace,
         exclude,
+        ignore_private,
         #[cfg(feature = "dev-support")]
         save_package_for_unit_test,
     }) = cmd;
@@ -125,6 +130,7 @@ fn main() -> anyhow::Result<()> {
             packages: package,
             workspace,
             exclude,
+            ignore_private,
             #[cfg(feature = "dev-support")]
             save_package_for_unit_test,
         },
