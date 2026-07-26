@@ -32,7 +32,7 @@ mod args {
         #[argh(switch, short = 'r')]
         /// if set, existing include and exclude directives will be removed prior to running the command.
         ///
-        /// That way, new files outside of any included directory will be picked up."
+        /// That way, new files outside of any included directory will be picked up.
         pub reset_manifest: bool,
 
         #[argh(switch, short = 'n')]
