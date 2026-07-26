@@ -154,6 +154,11 @@ fn version_matches(version: &str, spec: &str) -> bool {
             .is_some_and(|rest| rest.starts_with('.'))
 }
 
+fn package_matches_spec(package: &Package, spec: &str) -> bool {
+    let (name, version) = parse_spec(spec);
+    package.name == name && version.is_none_or(|v| version_matches(&package.version, v))
+}
+
 fn sorted(mut targets: Vec<Target>) -> Vec<Target> {
     targets.sort();
     targets
@@ -161,11 +166,25 @@ fn sorted(mut targets: Vec<Target>) -> Vec<Target> {
 
 pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Target>> {
     if options.workspace {
+        for spec in &options.exclude {
+            if !metadata
+                .packages
+                .iter()
+                .any(|package| package_matches_spec(package, spec))
+            {
+                return Err(Error::PackageSpecNotFound(spec.clone()));
+            }
+        }
         return Ok(sorted(
             metadata
                 .packages
                 .iter()
-                .filter(|p| !options.exclude.iter().any(|e| e == &p.name))
+                .filter(|p| {
+                    !options
+                        .exclude
+                        .iter()
+                        .any(|spec| package_matches_spec(p, spec))
+                })
                 .map(|p| Target {
                     name: p.name.clone(),
                     manifest_path: p.manifest_path.clone(),
@@ -179,13 +198,10 @@ pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Tar
             .packages
             .iter()
             .map(|spec| {
-                let (name, version) = parse_spec(spec);
                 metadata
                     .packages
                     .iter()
-                    .find(|p| {
-                        p.name == name && version.is_none_or(|v| version_matches(&p.version, v))
-                    })
+                    .find(|p| package_matches_spec(p, spec))
                     .ok_or_else(|| Error::PackageSpecNotFound(spec.clone()))
             })
             .collect::<Result<Vec<_>>>()?;
@@ -320,6 +336,20 @@ mod tests {
         )
         .unwrap();
         assert_eq!(targets, vec![target("crate-a")]);
+    }
+
+    #[test]
+    fn exclude_resolves_package_specs_and_rejects_unknown_ones() {
+        let targets = resolve_targets(
+            &options_with(vec![], true, vec!["crate-b@0.1"]),
+            &metadata(vec![]),
+        )
+        .unwrap();
+        assert_eq!(targets, vec![target("crate-a")]);
+
+        let err = resolve_targets(&options_with(vec![], true, vec!["nope"]), &metadata(vec![]))
+            .unwrap_err();
+        assert!(matches!(err, Error::PackageSpecNotFound(spec) if spec == "nope"));
     }
 
     #[test]
