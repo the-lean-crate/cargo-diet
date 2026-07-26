@@ -147,6 +147,13 @@ fn parse_spec(spec: &str) -> (&str, Option<&str>) {
     }
 }
 
+fn version_matches(version: &str, spec: &str) -> bool {
+    version == spec
+        || version
+            .strip_prefix(spec)
+            .is_some_and(|rest| rest.starts_with('.'))
+}
+
 fn sorted(mut targets: Vec<Target>) -> Vec<Target> {
     targets.sort();
     targets
@@ -176,7 +183,9 @@ pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Tar
                 metadata
                     .packages
                     .iter()
-                    .find(|p| p.name == name && version.is_none_or(|v| p.version == v))
+                    .find(|p| {
+                        p.name == name && version.is_none_or(|v| version_matches(&p.version, v))
+                    })
                     .ok_or_else(|| Error::PackageSpecNotFound(spec.clone()))
             })
             .collect::<Result<Vec<_>>>()?;
@@ -331,6 +340,17 @@ mod tests {
         )
         .unwrap_err();
         assert!(matches!(err, Error::PackageSpecNotFound(spec) if spec == "nope"));
+    }
+
+    #[test]
+    fn dash_p_accepts_partial_versions() {
+        for spec in ["crate-a@0", "crate-a@0.1", "crate-a@0.1.0"] {
+            assert_eq!(
+                resolve_targets(&options_with(vec![spec], false, vec![]), &metadata(vec![]))
+                    .unwrap(),
+                vec![target("crate-a")]
+            );
+        }
     }
 
     #[test]
