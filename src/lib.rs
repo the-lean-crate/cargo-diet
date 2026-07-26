@@ -1,7 +1,6 @@
-use locate_cargo_manifest::{LocateManifestError, locate_manifest};
-
 mod error;
 mod format_changeset;
+mod workspace;
 
 use bytesize::ByteSize;
 use criner_waste_report::{
@@ -14,6 +13,7 @@ use std::{
     io::{BufRead, BufReader, Cursor},
     path::{Path, PathBuf},
     str::FromStr,
+    sync::atomic::{AtomicUsize, Ordering},
 };
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -163,15 +163,7 @@ fn remove_exclude(doc: &mut toml_edit::DocumentMut) {
         .remove("exclude");
 }
 
-fn into_manifest_location_error(err: LocateManifestError) -> Error {
-    if let LocateManifestError::CargoExecution { stderr } = err {
-        Error::LocateManifestExecution(std::str::from_utf8(&stderr).unwrap().to_owned())
-    } else {
-        Error::LocateManifest(err)
-    }
-}
-
-fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
+fn tar_package_from_paths(lines: Vec<u8>, package_root: &Path) -> Result<TarPackage> {
     let mut entries = Vec::new();
     let mut meta_entries = Vec::new();
     let paths = BufReader::new(Cursor::new(lines))
@@ -179,10 +171,12 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         .collect::<std::result::Result<Vec<_>, _>>()?;
     let cargo_manifest = CargoConfig::from(
         fs::read_to_string(
-            paths
-                .iter()
-                .find(|p| *p == "Cargo.toml")
-                .expect("cargo manifest"),
+            package_root.join(
+                paths
+                    .iter()
+                    .find(|p| *p == "Cargo.toml")
+                    .expect("cargo manifest"),
+            ),
         )?
         .as_str(),
     );
@@ -205,7 +199,8 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
         }
 
         const REGULAR_FILE: u8 = b'0';
-        if let Some(meta) = fs::symlink_metadata(&path)
+        let abs_path = package_root.join(&path);
+        if let Some(meta) = fs::symlink_metadata(&abs_path)
             .map(Some)
             .or_else(|err| {
                 if err.kind() == std::io::ErrorKind::NotFound {
@@ -229,7 +224,7 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
                         size: meta.len(),
                         entry_type: REGULAR_FILE,
                     },
-                    fs::read(path)?,
+                    fs::read(abs_path)?,
                 ))
             }
         }
@@ -240,23 +235,27 @@ fn tar_package_from_paths(lines: Vec<u8>) -> Result<TarPackage> {
     })
 }
 
-fn cargo_package_content() -> Result<TarPackage> {
+pub(crate) fn cargo_command() -> std::process::Command {
     let cargo = std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_owned());
-    let output = std::process::Command::new(cargo)
+    std::process::Command::new(cargo)
+}
+
+fn cargo_package_content(package_name: &str, package_root: &Path) -> Result<TarPackage> {
+    let output = cargo_command()
         .arg("package")
         .arg("--no-verify")
         .arg("--allow-dirty")
         .arg("--quiet")
         .arg("--list")
+        .arg("--package")
+        .arg(package_name)
         .output()?;
     if !output.status.success() {
         Err(Error::CargoPackageError(
-            std::str::from_utf8(&output.stderr)
-                .map(|s| s.to_owned())
-                .unwrap_or_else(|_| String::from_utf8_lossy(&output.stderr).to_string()),
+            String::from_utf8_lossy(&output.stderr).into_owned(),
         ))
     } else {
-        tar_package_from_paths(output.stdout)
+        tar_package_from_paths(output.stdout, package_root)
     }
 }
 
@@ -319,6 +318,9 @@ pub struct Options {
     pub colored_output: bool,
     pub list: Option<usize>,
     pub package_size_limit: Option<u64>,
+    pub packages: Vec<String>,
+    pub workspace: bool,
+    pub exclude: Vec<String>,
     #[cfg(feature = "dev-support")]
     pub save_package_for_unit_test: Option<PathBuf>,
 }
@@ -326,6 +328,7 @@ pub struct Options {
 fn check_package_size(
     package: TarPackage,
     package_size_limit: u64,
+    package_root: &Path,
     mut output: impl std::io::Write,
     with_color: bool,
 ) -> Result<()> {
@@ -355,7 +358,7 @@ fn check_package_size(
             let path_without_root = tar_path_to_utf8_str(&entry.path);
             header.set_path(base.join(path_without_root))?;
 
-            let mut file = match std::fs::File::open(path_without_root) {
+            let mut file = match std::fs::File::open(package_root.join(path_without_root)) {
                 Ok(f) => f,
                 // Err(err) if err.kind() == std::io::ErrorKind::FilesystemLoop => continue,
                 Err(_) => continue, // for now ignore all errors until we can use the line above
@@ -401,31 +404,120 @@ fn write_package_for_unit_tests(path: Option<PathBuf>, package: &TarPackage) -> 
 }
 
 pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> {
-    let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
+    let targets = workspace::select_targets(&options)?;
 
-    let cargo_manifest_original_content = std::fs::read_to_string(&manifest_path)?;
+    #[cfg(feature = "dev-support")]
+    if targets.len() > 1 && options.save_package_for_unit_test.is_some() {
+        return Err(Error::message(
+            "--save-package-for-unit-test can only be used when a single package is selected",
+        ));
+    }
+
+    let multiple_targets = targets.len() > 1;
+    let results: Vec<(&workspace::Target, Vec<u8>, Result<()>)> = {
+        let options = &options;
+        let parallelism = std::thread::available_parallelism().map_or(1, |count| count.get());
+        let next = AtomicUsize::new(0);
+        std::thread::scope(|scope| {
+            let workers = (0..parallelism.min(targets.len()))
+                .map(|_| {
+                    let next = &next;
+                    let targets = &targets;
+                    scope.spawn(move || {
+                        let mut results = Vec::new();
+                        loop {
+                            let index = next.fetch_add(1, Ordering::Relaxed);
+                            let Some(target) = targets.get(index) else {
+                                break;
+                            };
+                            let mut buf = Vec::new();
+                            let result = execute_for_target(options, target, &mut buf);
+                            results.push((index, target, buf, result));
+                        }
+                        results
+                    })
+                })
+                .collect::<Vec<_>>();
+            let mut results = workers
+                .into_iter()
+                .flat_map(|worker| worker.join().expect("worker thread panicked"))
+                .collect::<Vec<_>>();
+            results.sort_unstable_by_key(|(index, ..)| *index);
+            results
+                .into_iter()
+                .map(|(_, target, buf, result)| (target, buf, result))
+                .collect()
+        })
+    };
+
+    let mut errors = Vec::new();
+    for (idx, (target, buf, result)) in results.into_iter().enumerate() {
+        if multiple_targets {
+            if idx > 0 {
+                writeln!(output)?;
+            }
+            let with_color = options.colored_output;
+            paint!(
+                output,
+                with_color,
+                ansi_term::Style::new().bold(),
+                "{}\n",
+                target.name
+            );
+        }
+        output.write_all(&buf)?;
+        if let Err(err) = result {
+            if multiple_targets {
+                errors.push(format!(
+                    "package `{}`: {}",
+                    target.name,
+                    err.describe_with_chain()
+                ));
+            } else {
+                return Err(err);
+            }
+        }
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(Error::message(errors.join("\n\n")))
+    }
+}
+
+fn execute_for_target(
+    options: &Options,
+    target: &workspace::Target,
+    mut output: impl std::io::Write,
+) -> Result<()> {
+    let manifest_path = &target.manifest_path;
+    let package_root = manifest_path.parent().expect("manifest has a parent dir");
+    let package_name = target.name.as_str();
+
+    let cargo_manifest_original_content = std::fs::read_to_string(manifest_path)?;
     let mut document = toml_edit::DocumentMut::from_str(&cargo_manifest_original_content)?;
 
     if options.reset {
         clear_includes_and_excludes(&mut document);
-        std::fs::write(&manifest_path, document.to_string())?;
+        std::fs::write(manifest_path, document.to_string())?;
     }
-    let package = cargo_package_content()?;
+    let package = cargo_package_content(package_name, package_root)?;
 
     #[cfg(feature = "dev-support")]
-    write_package_for_unit_tests(options.save_package_for_unit_test, &package)?;
+    write_package_for_unit_tests(options.save_package_for_unit_test.clone(), &package)?;
     let package_size_limit = options.package_size_limit.map(|s| (package.clone(), s));
     // In dry-run mode, reset the manifest to its original state right after we obtained the package content
     // that saw the reset manifest file, i.e. one without includes or excludes
     if options.reset && options.dry_run {
-        std::fs::write(&manifest_path, &cargo_manifest_original_content)?;
+        std::fs::write(manifest_path, &cargo_manifest_original_content)?;
     }
     let list = options
         .list
         .map(|list| (list, package.entries_meta_data.clone()));
     let document = edit(document, package, &mut output)?;
     write_manifest(
-        &manifest_path,
+        manifest_path,
         document,
         cargo_manifest_original_content,
         options.dry_run,
@@ -437,6 +529,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
         check_package_size(
             package,
             package_size_limit,
+            package_root,
             &mut output,
             options.colored_output,
         )?;

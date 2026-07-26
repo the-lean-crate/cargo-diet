@@ -57,6 +57,18 @@ mod args {
         /// can happen if big files are placed in currently included directories.
         pub package_size_limit: Option<u64>,
 
+        #[argh(option, short = 'p')]
+        /// package to make lean. like cargo's own `-p`/`--package`
+        pub package: Vec<String>,
+
+        #[argh(switch)]
+        /// make all workspace packages lean
+        pub workspace: bool,
+
+        #[argh(option)]
+        /// exclude the package when `--workspace` is set
+        pub exclude: Vec<String>,
+
         #[argh(option)]
         #[cfg(feature = "dev-support")]
         /// if set, this specifies the path at which a package description for use in criner-waste-report tests should be written to.
@@ -88,6 +100,9 @@ fn main() -> anyhow::Result<()> {
         dry_run,
         list,
         package_size_limit,
+        package,
+        workspace,
+        exclude,
         #[cfg(feature = "dev-support")]
         save_package_for_unit_test,
     }) = cmd;
@@ -107,6 +122,9 @@ fn main() -> anyhow::Result<()> {
             colored_output: std::io::stdout().is_terminal(),
             list,
             package_size_limit,
+            packages: package,
+            workspace,
+            exclude,
             #[cfg(feature = "dev-support")]
             save_package_for_unit_test,
         },

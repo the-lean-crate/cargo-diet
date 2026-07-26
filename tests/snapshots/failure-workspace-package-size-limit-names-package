@@ -1,0 +1,21 @@
+crate-a
+Your crate is perfectly lean!
+There would be no change.
+
+crate-b
+┌─────────────────┬─────────────┐
+│ Removed File    │ Size (Byte) │
+├─────────────────┼─────────────┤
+│ src/lib_test.rs │           0 │
+└─────────────────┴─────────────┘
+Saved 0% or <bytecount> in 1 files (of <bytecount> and 3 files in entire crate)
+
+The following change WOULD be made to Cargo.toml:
+Diff - removed / added + :
+[…skipped 2 lines…]
+version = "0.1.0"
+edition = "2021"
++include = ["src/**/*", "!**/*_test.*"]
+Error: package `crate-a`: The actual estimated package size of <bytecount> exceeded the limit of <bytecount> by <bytecount>
+
+package `crate-b`: The actual estimated package size of <bytecount> exceeded the limit of <bytecount> by <bytecount>
