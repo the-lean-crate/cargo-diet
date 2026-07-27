@@ -5,6 +5,58 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.4.0 (2026-07-27)
+
+### New Features
+
+ - <csr-id-11460387c642f064cac853ebfab4d617cc762a88/> ignore private crates flag
+ - <csr-id-f0def6b64892cb4742f0c625195578d7ffc513c6/> workspace support
+
+### Chore
+
+ - <csr-id-8093f0a7d641b8b4c7c3c1d0a81740cb18b65bbc/> run all unit tests with tests command
+ - <csr-id-a9ff40105a05a694cd0213dd8eb64fd0da19dba0/> remove extraneous quote
+ - <csr-id-e94b1bd9a215f2e0c51e48a5b5d0ce50020ebf73/> bump toml_edit
+ - <csr-id-57d77e8df85852b9fbac51bc49d32aad90df890f/> bump anyhow from 1.0.103 to 1.0.104
+ - <csr-id-8deb285b3402b411173a908fbf028979abab5e48/> bump Swatinem/rust-cache
+ - <csr-id-a37fe7efac63eb105c7c5dc2f5e0623a1ebee01c/> bump dtolnay/rust-toolchain
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 20 commits contributed to the release.
+ - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 0 issues like '(#ID)' were seen in commit messages
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **Uncategorized**
+    - Ignore private crates flag ([`1146038`](https://github.com/the-lean-crate/cargo-diet/commit/11460387c642f064cac853ebfab4d617cc762a88))
+    - Merge pull request #76 from 20jasper/feat/workspace-support ([`070770d`](https://github.com/the-lean-crate/cargo-diet/commit/070770dc679bf954cbe782e1ad926b4ca46ebc3e))
+    - Bound workspace execution concurrency ([`489546a`](https://github.com/the-lean-crate/cargo-diet/commit/489546a916c1e0924d6ee8571a866b70ddea3952))
+    - Resolve exclusion values as package specs ([`851c765`](https://github.com/the-lean-crate/cargo-diet/commit/851c7653ded40f50e7eefd6ae5585557d9338c68))
+    - Accept Cargo-compatible version package specs ([`9b5be0d`](https://github.com/the-lean-crate/cargo-diet/commit/9b5be0d0713b491f1ce62e5cdcc93c52e17c6747))
+    - Resolve defaults for package workspace roots ([`878c009`](https://github.com/the-lean-crate/cargo-diet/commit/878c009238b445897a70e74352d618e5c94a947f))
+    - Workspace support ([`f0def6b`](https://github.com/the-lean-crate/cargo-diet/commit/f0def6b64892cb4742f0c625195578d7ffc513c6))
+    - Merge pull request #75 from 20jasper/chore/run-all-test ([`f288a39`](https://github.com/the-lean-crate/cargo-diet/commit/f288a39b8fb54570771cf636001c119ecf4e7a81))
+    - Merge pull request #74 from 20jasper/chore/remove-extraneous-quote ([`a914f72`](https://github.com/the-lean-crate/cargo-diet/commit/a914f722aae30b2887adf72f73e69eed97870f0d))
+    - Run all unit tests with tests command ([`8093f0a`](https://github.com/the-lean-crate/cargo-diet/commit/8093f0a7d641b8b4c7c3c1d0a81740cb18b65bbc))
+    - Remove extraneous quote ([`a9ff401`](https://github.com/the-lean-crate/cargo-diet/commit/a9ff40105a05a694cd0213dd8eb64fd0da19dba0))
+    - Merge pull request #73 from the-lean-crate/dependabot/cargo/toml_edit-0.25.13spec-1.1.0 ([`adc4cac`](https://github.com/the-lean-crate/cargo-diet/commit/adc4cac290f0d8ac7c523e4b1f1751f90e91b6bf))
+    - Merge pull request #72 from the-lean-crate/dependabot/cargo/anyhow-1.0.104 ([`677aa79`](https://github.com/the-lean-crate/cargo-diet/commit/677aa791b8ea654258ed7b5cc282dbb09451a7e5))
+    - Merge pull request #71 from the-lean-crate/dependabot/github_actions/Swatinem/rust-cache-e18b497796c12c097a38f9edb9d0641fb99eee32 ([`aedb7f5`](https://github.com/the-lean-crate/cargo-diet/commit/aedb7f564aaa7dc37ccf6d6226fbabd98096ae2e))
+    - Merge pull request #70 from the-lean-crate/dependabot/github_actions/dtolnay/rust-toolchain-2c7215f132e9ebf062739d9130488b56d53c060c ([`e879092`](https://github.com/the-lean-crate/cargo-diet/commit/e879092b4775b8682d9feda0021b1a94f0004a30))
+    - Bump toml_edit ([`e94b1bd`](https://github.com/the-lean-crate/cargo-diet/commit/e94b1bd9a215f2e0c51e48a5b5d0ce50020ebf73))
+    - Bump anyhow from 1.0.103 to 1.0.104 ([`57d77e8`](https://github.com/the-lean-crate/cargo-diet/commit/57d77e8df85852b9fbac51bc49d32aad90df890f))
+    - Bump Swatinem/rust-cache ([`8deb285`](https://github.com/the-lean-crate/cargo-diet/commit/8deb285b3402b411173a908fbf028979abab5e48))
+    - Bump dtolnay/rust-toolchain ([`a37fe7e`](https://github.com/the-lean-crate/cargo-diet/commit/a37fe7efac63eb105c7c5dc2f5e0623a1ebee01c))
+</details>
+
 ## 1.3.2 (2026-07-15)
 
 ### Chore
