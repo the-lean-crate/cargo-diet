@@ -321,6 +321,7 @@ pub struct Options {
     pub packages: Vec<String>,
     pub workspace: bool,
     pub exclude: Vec<String>,
+    pub ignore_private: bool,
     #[cfg(feature = "dev-support")]
     pub save_package_for_unit_test: Option<PathBuf>,
 }

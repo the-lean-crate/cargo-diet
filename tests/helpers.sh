@@ -21,7 +21,12 @@ function in-clone-of () {
 function workspace_member () {
   local path=${1:?path of the member crate, relative to the workspace root}
   local name=${2:?package name}
+  shift 2
   mkdir -p "$path/src"
   printf '[package]\nname = "%s"\nversion = "0.1.0"\nedition = "2021"\n' "$name" > "$path/Cargo.toml"
+  local extra_manifest_line
+  for extra_manifest_line in "$@"; do
+    echo "$extra_manifest_line" >> "$path/Cargo.toml"
+  done
   echo "pub fn f() {}" > "$path/src/lib.rs"
 }

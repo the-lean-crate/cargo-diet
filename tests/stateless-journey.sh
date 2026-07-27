@@ -449,6 +449,50 @@ EOF
 )
 
 (sandbox
+  (with "a cargo workspace whose members cover every valid publish value"
+    step "set up workspace" && {
+      cat <<EOF > Cargo.toml
+[workspace]
+members = ["priv-false", "pub-default", "pub-registry", "pub-true"]
+resolver = "2"
+EOF
+      workspace_member priv-false priv-false 'publish = false'
+      workspace_member pub-default pub-default
+      workspace_member pub-registry pub-registry 'publish = ["my-registry"]'
+      workspace_member pub-true pub-true 'publish = true'
+    }
+
+    (when "running it with --workspace --ignore-private"
+      it "skips only the publish = false member, since publish = true or a registry list still allows publishing" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-ignore-private-skips-private-member" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n --workspace --ignore-private
+      }
+    )
+
+    (when "running it at the workspace root with --ignore-private and no package selection flags"
+      it "applies the same filter to the default members" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-ignore-private-skips-private-member" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n --ignore-private
+      }
+    )
+
+    (when "running it with --workspace and NO --ignore-private"
+      it "processes every member, private or not" && {
+        WITH_SNAPSHOT="$snapshot/success-workspace-private-members-processed-by-default" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n --workspace
+      }
+    )
+
+    (when "running it with -p priv-false --ignore-private"
+      it "fails, since the only selected package is private" && {
+        WITH_SNAPSHOT="$snapshot/failure-ignore-private-excludes-everything" \
+        expect_run ${WITH_FAILURE} "$exe" diet -n -p priv-false --ignore-private
+      }
+    )
+  )
+)
+
+(sandbox
   (with "a newly initialized cargo project with several dependencies"
     step "init cargo project" &&
       expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin

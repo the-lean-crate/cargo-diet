@@ -11,6 +11,7 @@ pub struct Package {
     pub name: String,
     pub version: String,
     pub manifest_path: PathBuf,
+    pub is_private: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -100,6 +101,10 @@ fn parse_metadata(text: &str) -> Result<Metadata> {
                     &p["manifest_path"],
                     "packages[].manifest_path",
                 )?),
+                is_private: {
+                    let publish = &p["publish"];
+                    publish.is_array() && publish.members().len() == 0
+                },
             })
         })
         .collect::<Result<Vec<_>>>()?;
@@ -164,6 +169,20 @@ fn sorted(mut targets: Vec<Target>) -> Vec<Target> {
     targets
 }
 
+fn filter_targets<'a>(
+    options: &Options,
+    packages: impl IntoIterator<Item = &'a Package>,
+) -> Vec<Target> {
+    packages
+        .into_iter()
+        .filter(|p| !(options.ignore_private && p.is_private))
+        .map(|p| Target {
+            name: p.name.clone(),
+            manifest_path: p.manifest_path.clone(),
+        })
+        .collect()
+}
+
 pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Target>> {
     if options.workspace {
         for spec in &options.exclude {
@@ -175,22 +194,15 @@ pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Tar
                 return Err(Error::PackageSpecNotFound(spec.clone()));
             }
         }
-        return Ok(sorted(
-            metadata
-                .packages
-                .iter()
-                .filter(|p| {
-                    !options
-                        .exclude
-                        .iter()
-                        .any(|spec| package_matches_spec(p, spec))
-                })
-                .map(|p| Target {
-                    name: p.name.clone(),
-                    manifest_path: p.manifest_path.clone(),
-                })
-                .collect(),
-        ));
+        return Ok(sorted(filter_targets(
+            options,
+            metadata.packages.iter().filter(|p| {
+                !options
+                    .exclude
+                    .iter()
+                    .any(|spec| package_matches_spec(p, spec))
+            }),
+        )));
     }
 
     if !options.packages.is_empty() {
@@ -205,33 +217,26 @@ pub fn resolve_targets(options: &Options, metadata: &Metadata) -> Result<Vec<Tar
                     .ok_or_else(|| Error::PackageSpecNotFound(spec.clone()))
             })
             .collect::<Result<Vec<_>>>()?;
-        return Ok(sorted(
-            packages
-                .into_iter()
-                .map(|p| Target {
-                    name: p.name.clone(),
-                    manifest_path: p.manifest_path.clone(),
-                })
-                .collect(),
-        ));
+        return Ok(sorted(filter_targets(options, packages)));
     }
 
-    Ok(sorted(
+    Ok(sorted(filter_targets(
+        options,
         metadata
             .packages
             .iter()
-            .filter(|p| metadata.default_member_ids.contains(&p.id))
-            .map(|p| Target {
-                name: p.name.clone(),
-                manifest_path: p.manifest_path.clone(),
-            })
-            .collect(),
-    ))
+            .filter(|p| metadata.default_member_ids.contains(&p.id)),
+    )))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const CRATE_A: &str = "crate-a";
+    const CRATE_B: &str = "crate-b";
+    const CRATE_A_ID: &str = "crate-a-id";
+    const CRATE_B_ID: &str = "crate-b-id";
 
     const TWO_PACKAGES: &str = r#"{
         "packages": [
@@ -241,12 +246,23 @@ mod tests {
         "workspace_default_members": ["crate-a-id"]
     }"#;
 
+    const EVERY_PUBLISH_VALUE: &str = r#"{
+        "packages": [
+            {"id": "a-id", "name": "a", "version": "0.1.0", "manifest_path": "/ws/a/Cargo.toml", "publish": []},
+            {"id": "b-id", "name": "b", "version": "0.1.0", "manifest_path": "/ws/b/Cargo.toml", "publish": null},
+            {"id": "c-id", "name": "c", "version": "0.1.0", "manifest_path": "/ws/c/Cargo.toml", "publish": ["my-registry"]},
+            {"id": "d-id", "name": "d", "version": "0.1.0", "manifest_path": "/ws/d/Cargo.toml"}
+        ],
+        "workspace_default_members": []
+    }"#;
+
     fn package(name: &str) -> Package {
         Package {
             id: format!("{name}-id"),
             name: name.to_owned(),
             version: "0.1.0".to_owned(),
             manifest_path: PathBuf::from(format!("/ws/{name}/Cargo.toml")),
+            is_private: false,
         }
     }
 
@@ -259,7 +275,7 @@ mod tests {
 
     fn metadata(default_member_ids: Vec<&str>) -> Metadata {
         Metadata {
-            packages: vec![package("crate-a"), package("crate-b")],
+            packages: vec![package(CRATE_A), package(CRATE_B)],
             default_member_ids: default_member_ids.into_iter().map(str::to_owned).collect(),
         }
     }
@@ -267,7 +283,14 @@ mod tests {
     #[test]
     fn parses_packages_and_default_members() {
         let parsed = parse_metadata(TWO_PACKAGES).unwrap();
-        assert_eq!(parsed, metadata(vec!["crate-a-id"]));
+        assert_eq!(parsed, metadata(vec![CRATE_A_ID]));
+    }
+
+    #[test]
+    fn only_an_empty_publish_array_marks_a_package_private() {
+        let parsed = parse_metadata(EVERY_PUBLISH_VALUE).unwrap();
+        let is_private: Vec<bool> = parsed.packages.iter().map(|p| p.is_private).collect();
+        assert_eq!(is_private, vec![true, false, false, false]);
     }
 
     #[test]
@@ -321,21 +344,21 @@ mod tests {
     #[test]
     fn workspace_flag_silently_overrides_dash_p() {
         let targets = resolve_targets(
-            &options_with(vec!["crate-a"], true, vec![]),
+            &options_with(vec![CRATE_A], true, vec![]),
             &metadata(vec![]),
         )
         .unwrap();
-        assert_eq!(targets, vec![target("crate-a"), target("crate-b")]);
+        assert_eq!(targets, vec![target(CRATE_A), target(CRATE_B)]);
     }
 
     #[test]
     fn exclude_applies_on_top_of_workspace() {
         let targets = resolve_targets(
-            &options_with(vec![], true, vec!["crate-b"]),
+            &options_with(vec![], true, vec![CRATE_B]),
             &metadata(vec![]),
         )
         .unwrap();
-        assert_eq!(targets, vec![target("crate-a")]);
+        assert_eq!(targets, vec![target(CRATE_A)]);
     }
 
     #[test]
@@ -345,7 +368,7 @@ mod tests {
             &metadata(vec![]),
         )
         .unwrap();
-        assert_eq!(targets, vec![target("crate-a")]);
+        assert_eq!(targets, vec![target(CRATE_A)]);
 
         let err = resolve_targets(&options_with(vec![], true, vec!["nope"]), &metadata(vec![]))
             .unwrap_err();
@@ -355,11 +378,11 @@ mod tests {
     #[test]
     fn dash_p_sorts_by_name_rather_than_cli_order() {
         let targets = resolve_targets(
-            &options_with(vec!["crate-b", "crate-a"], false, vec![]),
+            &options_with(vec![CRATE_B, CRATE_A], false, vec![]),
             &metadata(vec![]),
         )
         .unwrap();
-        assert_eq!(targets, vec![target("crate-a"), target("crate-b")]);
+        assert_eq!(targets, vec![target(CRATE_A), target(CRATE_B)]);
     }
 
     #[test]
@@ -378,7 +401,7 @@ mod tests {
             assert_eq!(
                 resolve_targets(&options_with(vec![spec], false, vec![]), &metadata(vec![]))
                     .unwrap(),
-                vec![target("crate-a")]
+                vec![target(CRATE_A)]
             );
         }
     }
@@ -387,10 +410,66 @@ mod tests {
     fn no_flags_falls_back_to_default_members() {
         let targets = resolve_targets(
             &options_with(vec![], false, vec![]),
-            &metadata(vec!["crate-a-id"]),
+            &metadata(vec![CRATE_A_ID]),
         )
         .unwrap();
-        assert_eq!(targets, vec![target("crate-a")]);
+        assert_eq!(targets, vec![target(CRATE_A)]);
+    }
+
+    fn metadata_with_private_crate_b(default_member_ids: Vec<&str>) -> Metadata {
+        let mut metadata = metadata(default_member_ids);
+        metadata
+            .packages
+            .iter_mut()
+            .find(|p| p.name == CRATE_B)
+            .expect("crate-b is part of the fixture")
+            .is_private = true;
+        metadata
+    }
+
+    fn with_ignore_private(mut options: Options) -> Options {
+        options.ignore_private = true;
+        options
+    }
+
+    #[test]
+    fn ignore_private_skips_private_members_with_workspace_flag() {
+        let targets = resolve_targets(
+            &with_ignore_private(options_with(vec![], true, vec![])),
+            &metadata_with_private_crate_b(vec![]),
+        )
+        .unwrap();
+        assert_eq!(targets, vec![target(CRATE_A)]);
+    }
+
+    #[test]
+    fn ignore_private_skips_private_default_members() {
+        let targets = resolve_targets(
+            &with_ignore_private(options_with(vec![], false, vec![])),
+            &metadata_with_private_crate_b(vec![CRATE_A_ID, CRATE_B_ID]),
+        )
+        .unwrap();
+        assert_eq!(targets, vec![target(CRATE_A)]);
+    }
+
+    #[test]
+    fn ignore_private_filters_explicitly_selected_private_packages() {
+        let targets = resolve_targets(
+            &with_ignore_private(options_with(vec![CRATE_B], false, vec![])),
+            &metadata_with_private_crate_b(vec![]),
+        )
+        .unwrap();
+        assert!(targets.is_empty());
+    }
+
+    #[test]
+    fn private_members_are_kept_without_ignore_private() {
+        let targets = resolve_targets(
+            &options_with(vec![], true, vec![]),
+            &metadata_with_private_crate_b(vec![]),
+        )
+        .unwrap();
+        assert_eq!(targets, vec![target(CRATE_A), target(CRATE_B)]);
     }
 
     #[test]
