@@ -99,7 +99,6 @@ dependencies = [
  "criner-waste-report",
  "flate2",
  "json",
- "locate-cargo-manifest",
  "nu-ansi-term",
  "quick-error",
  "rmp-serde",
@@ -227,15 +226,6 @@ name = "linux-raw-sys"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
-
-[[package]]
-name = "locate-cargo-manifest"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db985b63431fe09e8d71f50aeceffcc31e720cb86be8dad2f38d084c5a328466"
-dependencies = [
- "json",
-]
 
 [[package]]
 name = "log"
