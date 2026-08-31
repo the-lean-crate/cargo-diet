@@ -44,7 +44,7 @@ quick_error! {
         MissingPackageName(manifest_path: PathBuf) {
             display("{:?} is missing the required `package.name` field", manifest_path)
         }
-        JsonParse(err: json::Error) {
+        JsonParse(err: serde_json::Error) {
             from()
             source(err)
         }

@@ -68,8 +68,7 @@ fn locate_manifest() -> Result<PathBuf> {
             String::from_utf8_lossy(&output.stderr).into_owned(),
         ));
     }
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let parsed = json::parse(&stdout)?;
+    let parsed: serde_json::Value = serde_json::from_slice(&output.stdout)?;
     let root = parsed["root"].as_str().ok_or_else(|| {
         Error::message("`cargo locate-project` output is missing the \"root\" field")
     })?;
@@ -94,10 +93,12 @@ pub fn fetch(manifest_path: &Path) -> Result<Metadata> {
 }
 
 fn parse_metadata(text: &str) -> Result<Metadata> {
-    let parsed = json::parse(text)?;
+    let parsed: serde_json::Value = serde_json::from_str(text)?;
 
     let packages = parsed["packages"]
-        .members()
+        .as_array()
+        .into_iter()
+        .flatten()
         .map(|p| {
             Ok(Package {
                 id: require_str(&p["id"], "packages[].id")?.to_owned(),
@@ -109,17 +110,17 @@ fn parse_metadata(text: &str) -> Result<Metadata> {
                 )?),
                 is_private: {
                     let publish = &p["publish"];
-                    publish.is_array() && publish.members().len() == 0
+                    publish.as_array().is_some_and(|a| a.is_empty())
                 },
             })
         })
         .collect::<Result<Vec<_>>>()?;
     let workspace_default_members = &parsed["workspace_default_members"];
-    if !workspace_default_members.is_array() {
+    let Some(workspace_default_members) = workspace_default_members.as_array() else {
         return Err(expected_metadata_field("workspace_default_members")?);
-    }
+    };
     let default_member_ids = workspace_default_members
-        .members()
+        .iter()
         .map(|v| require_str(v, "workspace_default_members[]").map(str::to_owned))
         .collect::<Result<Vec<_>>>()?;
 
@@ -129,7 +130,7 @@ fn parse_metadata(text: &str) -> Result<Metadata> {
     })
 }
 
-fn require_str<'a>(value: &'a json::JsonValue, field: &'static str) -> Result<&'a str> {
+fn require_str<'a>(value: &'a serde_json::Value, field: &'static str) -> Result<&'a str> {
     match value.as_str() {
         Some(s) => Ok(s),
         None => Err(expected_metadata_field(field)?),
