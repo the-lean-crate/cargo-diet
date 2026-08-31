@@ -60,14 +60,8 @@ fn entries_to_table(
         return Ok(0);
     }
     use ascii_table::{Align, AsciiTable};
-    use std::fmt::Display;
 
     let mut ascii_table = AsciiTable::default();
-    ascii_table.set_max_width(
-        termsize::get()
-            .unwrap_or(termsize::Size { rows: 20, cols: 80 })
-            .cols as usize,
-    );
     ascii_table
         .column(0)
         .set_header("Removed File")
@@ -84,13 +78,13 @@ fn entries_to_table(
         .rev()
         .map(|(_, size)| size)
         .sum();
-    let data: Vec<Vec<&dyn Display>> = entries
+    let data: Vec<Vec<String>> = entries
         .iter()
         .take(items.unwrap_or(entries.len()))
         .rev()
-        .map(|(path, size)| vec![path as &dyn Display, size as &dyn Display])
+        .map(|(path, size)| vec![path.clone(), size.to_string()])
         .collect();
-    out.write_all(ascii_table.format(data).as_bytes())?;
+    ascii_table.writeln(&mut out, data)?;
     Ok(bytes)
 }
 
