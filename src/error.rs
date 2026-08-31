@@ -38,7 +38,7 @@ pub enum Error {
     #[error("{0:?} is missing the required `package.name` field")]
     MissingPackageName(PathBuf),
     #[error(transparent)]
-    JsonParse(#[from] json::Error),
+    JsonParse(#[from] serde_json::Error),
 }
 
 impl Error {
