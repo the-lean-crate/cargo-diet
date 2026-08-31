@@ -24,9 +24,9 @@ jobs:
     steps:
       - name: Get the release version from the tag
         if: env.ARTIFACT_VERSION == ''
-        run: |
-          echo "ARTIFACT_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          echo "version is: $ARTIFACT_VERSION"
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: echo "ARTIFACT_VERSION=$REF_NAME" >> "$GITHUB_ENV"
 
       - name: Set version output
         id: version
@@ -143,7 +143,7 @@ jobs:
           MATRIX_TARGET: ${{ matrix.target }}
         run: |
           staging="${EXE_NAME}-${RELEASE_VERSION}-${MATRIX_TARGET}"
-          mkdir -p "$staging"/complete
+          mkdir -p "$staging"
 
           cp {README.md,LICENSE.md,CHANGELOG.md} "$staging/"
 
