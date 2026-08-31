@@ -1,14 +1,5 @@
-# The way this works is a little weird. But basically, the create-release job
-# runs purely to initialize the GitHub release itself. Once done, the upload
-# URL of the release is saved as an artifact.
-#
-# The build-release job runs only once create-release is finished. It gets
-# the release upload URL by downloading the corresponding artifact (which was
-# uploaded by create-release). It then builds the release executables for each
-# supported platform and attaches them as release assets to the previously
-# created release.
-#
-# The key here is that we create the release only once.
+# create-release makes a GitHub release and passes it to build-release, which
+# builds for each target and uploads it as a release asset.
 
 name: release
 on:
@@ -18,51 +9,48 @@ on:
     # - ag/release
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+permissions: {}
 jobs:
   create-release:
     name: create-release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     # env:
     # Set to force version number, e.g., when no tag exists.
     # ARTIFACT_VERSION: TEST-0.0.0
     steps:
-      - name: Create artifacts directory
-        run: mkdir artifacts
-
       - name: Get the release version from the tag
         if: env.ARTIFACT_VERSION == ''
         run: |
           echo "ARTIFACT_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-          echo "version is: ${{ env.ARTIFACT_VERSION }}"
+          echo "version is: $ARTIFACT_VERSION"
+
+      - name: Set version output
+        id: version
+        run: echo "version=$ARTIFACT_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
-        id: release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ env.ARTIFACT_VERSION }}
-          name: ${{ env.ARTIFACT_VERSION }}
-          allowUpdates: true
-          omitBody: true
-          omitPrereleaseDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Save release upload URL to artifact
-        run: echo "${{ steps.release.outputs.upload_url }}" > artifacts/release-upload-url
-
-      - name: Save version number to artifact
-        run: echo "${{ env.ARTIFACT_VERSION }}" > artifacts/release-version
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: artifacts
-          path: artifacts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view "$ARTIFACT_VERSION" >/dev/null 2>&1; then
+            gh release edit "$ARTIFACT_VERSION" --title "$ARTIFACT_VERSION"
+          else
+            gh release create "$ARTIFACT_VERSION" --title "$ARTIFACT_VERSION" --notes "" --verify-tag
+          fi
 
   build-release:
     name: build-release
     needs: ["create-release"]
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     env:
+      RELEASE_VERSION: ${{ needs.create-release.outputs.version }}
       # For some builds, we use cross to test on 32-bit and big-endian
       # systems.
       CARGO: cargo
@@ -105,9 +93,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Install packages (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
@@ -139,22 +128,6 @@ jobs:
           echo "target flag is: ${{ env.TARGET_FLAGS }}"
           echo "target dir is: ${{ env.TARGET_DIR }}"
 
-      - name: Get release download URL
-        uses: actions/download-artifact@v8
-        with:
-          name: artifacts
-          path: artifacts
-
-      - name: Set release upload URL and release version
-        shell: bash
-        run: |
-          release_upload_url="$(cat artifacts/release-upload-url)"
-          echo "RELEASE_UPLOAD_URL=$release_upload_url" >> $GITHUB_ENV
-          echo "release upload url: $RELEASE_UPLOAD_URL"
-          release_version="$(cat artifacts/release-version)"
-          echo "RELEASE_VERSION=$release_version" >> $GITHUB_ENV
-          echo "release version: $RELEASE_VERSION"
-
       - name: Build release binary
         run: ${{ env.CARGO }} build --verbose --release ${{ env.TARGET_FLAGS }}
 
@@ -171,8 +144,10 @@ jobs:
             /target/arm-unknown-linux-gnueabihf/release/${{ env.EXE_NAME }}
       - name: Build archive
         shell: bash
+        env:
+          MATRIX_TARGET: ${{ matrix.target }}
         run: |
-          staging="${{ env.EXE_NAME }}-${{ env.RELEASE_VERSION }}-${{ matrix.target }}"
+          staging="${EXE_NAME}-${RELEASE_VERSION}-${MATRIX_TARGET}"
           mkdir -p "$staging"/complete
 
           cp {README.md,LICENSE.md,CHANGELOG.md} "$staging/"
@@ -189,11 +164,7 @@ jobs:
           fi
 
       - name: Upload release archive
-        uses: actions/upload-release-asset@v1.0.2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ env.RELEASE_UPLOAD_URL }}
-          asset_path: ${{ env.ASSET }}
-          asset_name: ${{ env.ASSET }}
-          asset_content_type: application/octet-stream
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release upload "$RELEASE_VERSION" "$ASSET" --clobber
