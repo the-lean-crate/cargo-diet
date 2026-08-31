@@ -5,6 +5,139 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.4.1 (2026-08-30)
+
+### Chore
+
+ - <csr-id-034d1fed37e5535fef3ffbd803dbbd463bb33d73/> replace deprecated ansi_term with nu-ansi-term
+   ansi_term is unmaintained (RUSTSEC-2021-0139). nu-ansi-term is an
+   actively maintained fork with the same API shape (Colour -> Color).
+ - <csr-id-bf57e5a6214132c09851e1944a3e2e7095974d02/> bump dependencies
+ - <csr-id-ffff2ed42ef64ba1480796721ff97d903e173473/> publish to crates.io via OIDC trusted publishing
+   Follows crates.io's documented example: ubuntu-latest ships Rust
+   already, so no separate toolchain install step is needed.
+ - <csr-id-8f659c7a897077375146071eb831a7128d46c84b/> use github.ref_name, drop dead staging complete dir
+ - <csr-id-468f820c98d1ebdf8511aec90e375d101459522e/> trim Windows release targets to msvc x86_64 and arm64
+ - <csr-id-63eddfccb1074c073ed5cecf329e50930389803b/> GHA modernization and security
+   chore(ci): GHA modernization and security
+ - <csr-id-4674e9a9d56889f9160f724fe353e4314c847c11/> bump similar from 3.1.2 to 3.2.0
+   Bumps [similar](https://github.com/mitsuhiko/similar) from 3.1.2 to 3.2.0.
+   - [Changelog](https://github.com/mitsuhiko/similar/blob/main/CHANGELOG.md)
+   - [Commits](https://github.com/mitsuhiko/similar/compare/3.1.2...3.2.0)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: similar
+     dependency-version: 3.2.0
+     dependency-type: direct:production
+     update-type: version-update:semver-minor
+   ...
+ - <csr-id-d06ad8444db43656be34e35e712342ab4e74b018/> bump Swatinem/rust-cache
+   Bumps [Swatinem/rust-cache](https://github.com/swatinem/rust-cache) from a45951ff880207c249adf57334cf2e9bd81d6e1e to f0d9c3887740aee45f6153b24b3a6b815192ec16.
+   - [Release notes](https://github.com/swatinem/rust-cache/releases)
+   - [Changelog](https://github.com/Swatinem/rust-cache/blob/master/CHANGELOG.md)
+   - [Commits](https://github.com/swatinem/rust-cache/compare/a45951ff880207c249adf57334cf2e9bd81d6e1e...f0d9c3887740aee45f6153b24b3a6b815192ec16)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: Swatinem/rust-cache
+     dependency-version: f0d9c3887740aee45f6153b24b3a6b815192ec16
+     dependency-type: direct:production
+   ...
+ - <csr-id-0df54f0ad5c8f8b07a09dc4ab6f53df25eeba9e9/> bump similar from 3.1.1 to 3.1.2
+   Bumps [similar](https://github.com/mitsuhiko/similar) from 3.1.1 to 3.1.2.
+   - [Changelog](https://github.com/mitsuhiko/similar/blob/main/CHANGELOG.md)
+   - [Commits](https://github.com/mitsuhiko/similar/compare/3.1.1...3.1.2)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: similar
+     dependency-version: 3.1.2
+     dependency-type: direct:production
+     update-type: version-update:semver-patch
+   ...
+ - <csr-id-ad53f95472badec2982b9e2cce245dc5a6794eea/> bump bytesize from 2.4.2 to 2.7.0
+   Bumps [bytesize](https://github.com/bytesize-rs/bytesize) from 2.4.2 to 2.7.0.
+   - [Release notes](https://github.com/bytesize-rs/bytesize/releases)
+   - [Changelog](https://github.com/bytesize-rs/bytesize/blob/master/CHANGELOG.md)
+   - [Commits](https://github.com/bytesize-rs/bytesize/compare/bytesize-v2.4.2...bytesize-v2.7.0)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: bytesize
+     dependency-version: 2.7.0
+     dependency-type: direct:production
+     update-type: version-update:semver-minor
+   ...
+ - <csr-id-222017c2d524012b80d816ba3d32a75cc4a56c10/> bump Swatinem/rust-cache
+   Bumps [Swatinem/rust-cache](https://github.com/swatinem/rust-cache) from e18b497796c12c097a38f9edb9d0641fb99eee32 to a45951ff880207c249adf57334cf2e9bd81d6e1e.
+   - [Release notes](https://github.com/swatinem/rust-cache/releases)
+   - [Changelog](https://github.com/Swatinem/rust-cache/blob/master/CHANGELOG.md)
+   - [Commits](https://github.com/swatinem/rust-cache/compare/e18b497796c12c097a38f9edb9d0641fb99eee32...a45951ff880207c249adf57334cf2e9bd81d6e1e)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: Swatinem/rust-cache
+     dependency-version: a45951ff880207c249adf57334cf2e9bd81d6e1e
+     dependency-type: direct:production
+   ...
+ - <csr-id-14d8fef30c373438b06bccba25944ea6eec5eeda/> bump dtolnay/rust-toolchain
+   Bumps [dtolnay/rust-toolchain](https://github.com/dtolnay/rust-toolchain) from 2c7215f132e9ebf062739d9130488b56d53c060c to 6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772.
+   - [Release notes](https://github.com/dtolnay/rust-toolchain/releases)
+   - [Commits](https://github.com/dtolnay/rust-toolchain/compare/2c7215f132e9ebf062739d9130488b56d53c060c...6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772)
+   
+   ---
+   updated-dependencies:
+   - dependency-name: dtolnay/rust-toolchain
+     dependency-version: 6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+     dependency-type: direct:production
+   ...
+
+### Other
+
+ - <csr-id-79e2f092fcd19d5094c81530f7f4c1b3dadf2973/> run zizmor to catch GitHub Actions workflow security issues
+
+### Commit Statistics
+
+<csr-read-only-do-not-edit/>
+
+ - 20 commits contributed to the release.
+ - 34 days passed between releases.
+ - 13 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 3 unique issues were worked on: [#90](https://github.com/the-lean-crate/cargo-diet/issues/90), [#91](https://github.com/the-lean-crate/cargo-diet/issues/91), [#92](https://github.com/the-lean-crate/cargo-diet/issues/92)
+
+### Commit Details
+
+<csr-read-only-do-not-edit/>
+
+<details><summary>view details</summary>
+
+ * **[#90](https://github.com/the-lean-crate/cargo-diet/issues/90)**
+    - Publish to crates.io via OIDC trusted publishing ([`ffff2ed`](https://github.com/the-lean-crate/cargo-diet/commit/ffff2ed42ef64ba1480796721ff97d903e173473))
+ * **[#91](https://github.com/the-lean-crate/cargo-diet/issues/91)**
+    - Bump dependencies ([`bf57e5a`](https://github.com/the-lean-crate/cargo-diet/commit/bf57e5a6214132c09851e1944a3e2e7095974d02))
+ * **[#92](https://github.com/the-lean-crate/cargo-diet/issues/92)**
+    - Replace deprecated ansi_term with nu-ansi-term ([`034d1fe`](https://github.com/the-lean-crate/cargo-diet/commit/034d1fed37e5535fef3ffbd803dbbd463bb33d73))
+ * **Uncategorized**
+    - Use github.ref_name, drop dead staging complete dir ([`8f659c7`](https://github.com/the-lean-crate/cargo-diet/commit/8f659c7a897077375146071eb831a7128d46c84b))
+    - Trim Windows release targets to msvc x86_64 and arm64 ([`468f820`](https://github.com/the-lean-crate/cargo-diet/commit/468f820c98d1ebdf8511aec90e375d101459522e))
+    - GHA modernization and security ([`63eddfc`](https://github.com/the-lean-crate/cargo-diet/commit/63eddfccb1074c073ed5cecf329e50930389803b))
+    - Merge pull request #87 from the-lean-crate/ci/add-zizmor ([`0f05568`](https://github.com/the-lean-crate/cargo-diet/commit/0f05568b2754a16e2300af3afc3e43fa2cde8caf))
+    - Run zizmor to catch GitHub Actions workflow security issues ([`79e2f09`](https://github.com/the-lean-crate/cargo-diet/commit/79e2f092fcd19d5094c81530f7f4c1b3dadf2973))
+    - Merge pull request #86 from the-lean-crate/dependabot/cargo/similar-3.2.0 ([`6d07e27`](https://github.com/the-lean-crate/cargo-diet/commit/6d07e27ffbb0124b7e4f1bc6ec878fcdf03e5737))
+    - Bump similar from 3.1.2 to 3.2.0 ([`4674e9a`](https://github.com/the-lean-crate/cargo-diet/commit/4674e9a9d56889f9160f724fe353e4314c847c11))
+    - Merge pull request #85 from the-lean-crate/dependabot/github_actions/Swatinem/rust-cache-f0d9c3887740aee45f6153b24b3a6b815192ec16 ([`fadfa31`](https://github.com/the-lean-crate/cargo-diet/commit/fadfa319f581f9dffc4e8fe83fd41869f42808f7))
+    - Bump Swatinem/rust-cache ([`d06ad84`](https://github.com/the-lean-crate/cargo-diet/commit/d06ad8444db43656be34e35e712342ab4e74b018))
+    - Merge pull request #83 from the-lean-crate/dependabot/cargo/similar-3.1.2 ([`5e483ab`](https://github.com/the-lean-crate/cargo-diet/commit/5e483ab4cedd4682001de527a5febb8189f415e0))
+    - Merge pull request #82 from the-lean-crate/dependabot/cargo/bytesize-2.7.0 ([`fdd152c`](https://github.com/the-lean-crate/cargo-diet/commit/fdd152cda145fdf1405a735caaefc435082c0b7a))
+    - Merge pull request #81 from the-lean-crate/dependabot/github_actions/Swatinem/rust-cache-a45951ff880207c249adf57334cf2e9bd81d6e1e ([`9cfe3e9`](https://github.com/the-lean-crate/cargo-diet/commit/9cfe3e941352984540a08d3725cf117962b6d0be))
+    - Merge pull request #80 from the-lean-crate/dependabot/github_actions/dtolnay/rust-toolchain-6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 ([`063931d`](https://github.com/the-lean-crate/cargo-diet/commit/063931da1f133abc22bb7fb88c5ab6ca6743bd95))
+    - Bump similar from 3.1.1 to 3.1.2 ([`0df54f0`](https://github.com/the-lean-crate/cargo-diet/commit/0df54f0ad5c8f8b07a09dc4ab6f53df25eeba9e9))
+    - Bump bytesize from 2.4.2 to 2.7.0 ([`ad53f95`](https://github.com/the-lean-crate/cargo-diet/commit/ad53f95472badec2982b9e2cce245dc5a6794eea))
+    - Bump Swatinem/rust-cache ([`222017c`](https://github.com/the-lean-crate/cargo-diet/commit/222017c2d524012b80d816ba3d32a75cc4a56c10))
+    - Bump dtolnay/rust-toolchain ([`14d8fef`](https://github.com/the-lean-crate/cargo-diet/commit/14d8fef30c373438b06bccba25944ea6eec5eeda))
+</details>
+
 ## 1.4.0 (2026-07-27)
 
 ### New Features
@@ -20,13 +153,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - <csr-id-57d77e8df85852b9fbac51bc49d32aad90df890f/> bump anyhow from 1.0.103 to 1.0.104
  - <csr-id-8deb285b3402b411173a908fbf028979abab5e48/> bump Swatinem/rust-cache
  - <csr-id-a37fe7efac63eb105c7c5dc2f5e0623a1ebee01c/> bump dtolnay/rust-toolchain
+ - <csr-id-9abdacab2b9b649e7505326677852a4943fc9c30/> cargo-diet v1.4.0
 
 ### Commit Statistics
 
 <csr-read-only-do-not-edit/>
 
- - 20 commits contributed to the release.
- - 8 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 21 commits contributed to the release.
+ - 12 days passed between releases.
+ - 9 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
 ### Commit Details
@@ -36,6 +171,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Cargo-diet v1.4.0 ([`9abdaca`](https://github.com/the-lean-crate/cargo-diet/commit/9abdacab2b9b649e7505326677852a4943fc9c30))
+    - Merge pull request #78 from 20jasper/feat/workspace-support ([`4ad418f`](https://github.com/the-lean-crate/cargo-diet/commit/4ad418fdbcfbca7a0744b946cd62eb89c1fd66b5))
     - Ignore private crates flag ([`1146038`](https://github.com/the-lean-crate/cargo-diet/commit/11460387c642f064cac853ebfab4d617cc762a88))
     - Merge pull request #76 from 20jasper/feat/workspace-support ([`070770d`](https://github.com/the-lean-crate/cargo-diet/commit/070770dc679bf954cbe782e1ad926b4ca46ebc3e))
     - Bound workspace execution concurrency ([`489546a`](https://github.com/the-lean-crate/cargo-diet/commit/489546a916c1e0924d6ee8571a866b70ddea3952))
@@ -82,7 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 14 commits contributed to the release.
+ - 15 commits contributed to the release.
  - 7 commits were understood as [conventional](https://www.conventionalcommits.org).
  - 0 issues like '(#ID)' were seen in commit messages
 
@@ -93,6 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <details><summary>view details</summary>
 
  * **Uncategorized**
+    - Release cargo-diet v1.3.2 ([`097b407`](https://github.com/the-lean-crate/cargo-diet/commit/097b4074148f5f7da3919c6b661c343d0889956e))
     - Merge pull request #68 from 20jasper/chore/replace-difference-with-similar ([`5163811`](https://github.com/the-lean-crate/cargo-diet/commit/516381139c102e7f19028a86b267926d52e777c1))
     - Review ([`4a1634b`](https://github.com/the-lean-crate/cargo-diet/commit/4a1634bc5d1203b4916fd20cec7f5f919a4f4d58))
     - Rename stale test names ([`c0cc2e6`](https://github.com/the-lean-crate/cargo-diet/commit/c0cc2e6b1c4392cfe0feb6635202e6d7592da667))
