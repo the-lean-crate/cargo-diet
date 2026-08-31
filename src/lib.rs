@@ -281,7 +281,7 @@ fn write_manifest(
         paint!(
             output,
             with_color,
-            ansi_term::Style::new().dimmed(),
+            nu_ansi_term::Style::new().dimmed(),
             "{}\n",
             if dry_run {
                 "There would be no change."
@@ -294,7 +294,7 @@ fn write_manifest(
         paint!(
             output,
             with_color,
-            ansi_term::Style::new().dimmed(),
+            nu_ansi_term::Style::new().dimmed(),
             "{}\n",
             if dry_run {
                 "The following change WOULD be made to Cargo.toml:"
@@ -382,7 +382,7 @@ fn check_package_size(
     paint!(
         output,
         with_color,
-        ansi_term::Colour::Green,
+        nu_ansi_term::Color::Green,
         "{}\n",
         format!(
             "The estimated actual package size of {} is within the limit of {}.",
@@ -461,7 +461,7 @@ pub fn execute(options: Options, mut output: impl std::io::Write) -> Result<()> 
             paint!(
                 output,
                 with_color,
-                ansi_term::Style::new().bold(),
+                nu_ansi_term::Style::new().bold(),
                 "{}\n",
                 target.name
             );

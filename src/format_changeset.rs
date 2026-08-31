@@ -2,8 +2,8 @@
 //! (License MIT)
 //! and adapted from https://github.com/johannhof/difference.rs/blob/c5749ad7d82aa3d480c15cb61af9f6baa08f116f/examples/line-by-line.rs
 //! (License MIT)
-use ansi_term::Colour::{Green, Red};
-use ansi_term::Style;
+use nu_ansi_term::Color::{Green, Red};
+use nu_ansi_term::Style;
 use similar::{ChangeTag, TextDiff};
 
 #[macro_export]
