@@ -90,7 +90,14 @@ mod args {
 use args::{Args, Diet, Subcommands};
 use std::io::IsTerminal;
 
-fn main() -> anyhow::Result<()> {
+fn main() {
+    if let Err(err) = run() {
+        eprintln!("Error: {}", err.describe_with_chain());
+        std::process::exit(1);
+    }
+}
+
+fn run() -> cargo_diet::Result<()> {
     let cmd = argh::from_env::<Args>().cmd;
     let Subcommands::Diet(Diet {
         version,
