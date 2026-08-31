@@ -64,7 +64,7 @@ jobs:
       EXE_NAME: cargo-diet
     strategy:
       matrix:
-        build: [linux, linux-arm, macos, win-msvc, win-gnu, win32-msvc]
+        build: [linux, linux-arm, macos, win-msvc, win-arm64-msvc]
         include:
           - build: linux
             os: ubuntu-latest
@@ -79,17 +79,13 @@ jobs:
             rust: stable
             target: x86_64-apple-darwin
           - build: win-msvc
-            os: windows-2019
-            rust: nightly
+            os: windows-latest
+            rust: stable
             target: x86_64-pc-windows-msvc
-          - build: win-gnu
-            os: windows-2019
-            rust: nightly-x86_64-gnu
-            target: x86_64-pc-windows-gnu
-          - build: win32-msvc
-            os: windows-2019
-            rust: nightly
-            target: i686-pc-windows-msvc
+          - build: win-arm64-msvc
+            os: windows-latest
+            rust: stable
+            target: aarch64-pc-windows-msvc
 
     steps:
       - name: Checkout repository
@@ -115,7 +111,6 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Use Cross
-        # if: matrix.os != 'windows-2019'
         run: |
           cargo install cross
           echo "CARGO=cross" >> $GITHUB_ENV
@@ -152,9 +147,10 @@ jobs:
 
           cp {README.md,LICENSE.md,CHANGELOG.md} "$staging/"
 
-          if [ "${{ matrix.os }}" = "windows-2019" ]; then
-            # cp "target/${{ matrix.target }}/release/${{ env.EXE_NAME }}.exe" "$staging/"
-            cp "target/release/${{ env.EXE_NAME }}.exe" "$staging/"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            bin_dir="target/${MATRIX_TARGET}/release"
+            [ -f "$bin_dir/${EXE_NAME}.exe" ] || bin_dir="target/release"
+            cp "$bin_dir/${EXE_NAME}.exe" "$staging/"
             7z a "$staging.zip" "$staging"
             echo "ASSET=$staging.zip" >> $GITHUB_ENV
           else
