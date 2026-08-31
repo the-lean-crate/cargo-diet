@@ -1,54 +1,44 @@
 use bytesize::ByteSize;
-use quick_error::quick_error;
 use std::path::PathBuf;
+use thiserror::Error as ThisError;
 
-quick_error! {
-    #[derive(Debug)]
-    pub enum Error {
-        Bug(d: &'static str) {
-            display("{}", d)
-        }
-        Message(d: String) {
-            display("{}", d)
-        }
-        CargoPackageError(msg: String) {
-            display("{}\n\nTo try fixing this, run 'cargo package' by hand before running 'cargo diet' again.", msg)
-        }
-        TomlParse(err: toml_edit::TomlError) {
-            from()
-            source(err)
-        }
-        Io(err: std::io::Error) {
-            from()
-            source(err)
-        }
-        PackageSizeLimitExceeded(actual_in_bytes: u64, limit_in_bytes: u64) {
-            display("The actual estimated package size of {} exceeded the limit of {} by {}", ByteSize(*actual_in_bytes).display().si(), ByteSize(*limit_in_bytes).display().si(), ByteSize(actual_in_bytes.saturating_sub(*limit_in_bytes)).display().si())
-        }
-        FileMetadata(err: std::io::Error, path: String) {
-            display("Could not open {:?} for reading file meta-data", path)
-            source(err)
-        }
-        LocateManifestExecution(msg: String) {
-            display("{}", msg)
-        }
-        CargoMetadataError(msg: String) {
-            display("{}", msg)
-        }
-        ExpectedMetadataField(field: &'static str, cargo_version: String) {
-            display("`cargo metadata` missing expected `{}` field. This may mean an outdated cargo version (found: {})", field, cargo_version)
-        }
-        PackageSpecNotFound(spec: String) {
-            display("`{}` did not match any packages", spec)
-        }
-        MissingPackageName(manifest_path: PathBuf) {
-            display("{:?} is missing the required `package.name` field", manifest_path)
-        }
-        JsonParse(err: json::Error) {
-            from()
-            source(err)
-        }
-    }
+#[derive(Debug, ThisError)]
+pub enum Error {
+    #[error("{0}")]
+    Bug(&'static str),
+    #[error("{0}")]
+    Message(String),
+    #[error(
+        "{0}\n\nTo try fixing this, run 'cargo package' by hand before running 'cargo diet' again."
+    )]
+    CargoPackageError(String),
+    #[error(transparent)]
+    TomlParse(#[from] toml_edit::TomlError),
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+    #[error(
+        "The actual estimated package size of {} exceeded the limit of {} by {}",
+        ByteSize(*.0).display().si(),
+        ByteSize(*.1).display().si(),
+        ByteSize(.0.saturating_sub(*.1)).display().si()
+    )]
+    PackageSizeLimitExceeded(u64, u64),
+    #[error("Could not open {1:?} for reading file meta-data")]
+    FileMetadata(#[source] std::io::Error, String),
+    #[error("{0}")]
+    LocateManifestExecution(String),
+    #[error("{0}")]
+    CargoMetadataError(String),
+    #[error(
+        "`cargo metadata` missing expected `{0}` field. This may mean an outdated cargo version (found: {1})"
+    )]
+    ExpectedMetadataField(&'static str, String),
+    #[error("`{0}` did not match any packages")]
+    PackageSpecNotFound(String),
+    #[error("{0:?} is missing the required `package.name` field")]
+    MissingPackageName(PathBuf),
+    #[error(transparent)]
+    JsonParse(#[from] json::Error),
 }
 
 impl Error {
@@ -56,7 +46,7 @@ impl Error {
         Error::Message(msg.into())
     }
 
-    pub(crate) fn describe_with_chain(&self) -> String {
+    pub fn describe_with_chain(&self) -> String {
         use std::error::Error as _;
         let mut description = self.to_string();
         let mut source = self.source();
