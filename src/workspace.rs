@@ -1,5 +1,4 @@
 use crate::{Error, Options, Result};
-use locate_cargo_manifest::{LocateManifestError, locate_manifest};
 use std::{
     path::{Path, PathBuf},
     str::FromStr,
@@ -33,7 +32,7 @@ pub fn select_targets(options: &Options) -> Result<Vec<Target>> {
         ));
     }
 
-    let manifest_path = locate_manifest().map_err(into_manifest_location_error)?;
+    let manifest_path = locate_manifest()?;
     let document = toml_edit::DocumentMut::from_str(&std::fs::read_to_string(&manifest_path)?)?;
     let is_virtual_manifest = !document.contains_key("package");
 
@@ -62,12 +61,19 @@ pub fn select_targets(options: &Options) -> Result<Vec<Target>> {
     Ok(targets)
 }
 
-fn into_manifest_location_error(err: LocateManifestError) -> Error {
-    if let LocateManifestError::CargoExecution { stderr } = err {
-        Error::LocateManifestExecution(String::from_utf8_lossy(&stderr).into_owned())
-    } else {
-        Error::LocateManifest(err)
+fn locate_manifest() -> Result<PathBuf> {
+    let output = crate::cargo_command().arg("locate-project").output()?;
+    if !output.status.success() {
+        return Err(Error::LocateManifestExecution(
+            String::from_utf8_lossy(&output.stderr).into_owned(),
+        ));
     }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let parsed = json::parse(&stdout)?;
+    let root = parsed["root"].as_str().ok_or_else(|| {
+        Error::message("`cargo locate-project` output is missing the \"root\" field")
+    })?;
+    Ok(PathBuf::from(root))
 }
 
 pub fn fetch(manifest_path: &Path) -> Result<Metadata> {

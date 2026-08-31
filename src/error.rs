@@ -29,10 +29,6 @@ quick_error! {
             display("Could not open {:?} for reading file meta-data", path)
             source(err)
         }
-        LocateManifest(err: locate_cargo_manifest::LocateManifestError) {
-            from()
-            source(err)
-        }
         LocateManifestExecution(msg: String) {
             display("{}", msg)
         }
