@@ -114,15 +114,28 @@ pub fn format_changeset(
     if let Some((first_changed_hunk, last_changed_hunk)) = first_changed_hunk.zip(last_changed_hunk)
     {
         for diff in &diffs[first_changed_hunk..=last_changed_hunk] {
-            match diff {
-                (ChangeTag::Equal, x) => {
-                    writeln!(t, " {}", x)?;
-                }
-                (ChangeTag::Insert, x) => {
-                    paint!(t, use_color, Green, "{}{}\n", SIGN_RIGHT, x);
-                }
-                (ChangeTag::Delete, x) => {
-                    paint!(t, use_color, Red, "{}{}\n", SIGN_LEFT, x);
+            // match diff {
+            //     (ChangeTag::Equal, x) => {
+            //         writeln!(t, " {}", x)?;
+            //     }
+            //     (ChangeTag::Insert, x) => {
+            //         paint!(t, use_color, Green, "{}{}\n", SIGN_RIGHT, x);
+            //     }
+            //     (ChangeTag::Delete, x) => {
+            //         paint!(t, use_color, Red, "{}{}\n", SIGN_LEFT, x);
+            //     }
+            // }
+            for line in lines_of(diff) {
+                match diff.0 {
+                    ChangeTag::Equal => {
+                        writeln!(t, " {}", line)?;
+                    }
+                    ChangeTag::Insert => {
+                        paint!(t, use_color, Green, "{}{}\n", SIGN_RIGHT, line);
+                    }
+                    ChangeTag::Delete => {
+                        paint!(t, use_color, Red, "{}{}\n", SIGN_LEFT, line);
+                    }
                 }
             }
         }
@@ -196,6 +209,67 @@ name = \"example\"
 [package]
 name = \"example\"
 -include = [\"src/**/*\"]
+"
+        );
+    }
+
+    #[test]
+    fn marks_every_line_of_a_multi_line_change() {
+        let output = format_diff(
+            "[package]
+name = \"example\"
+include = [
+  \"src/**/*\",
+  \"LICENSE\",
+]
+edition = \"2021\"
+",
+            "[package]
+name = \"example\"
+include = [\"src/**/*\", \"README.md\"]
+edition = \"2021\"
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+[package]
+name = \"example\"
+-include = [
+-  \"src/**/*\",
+-  \"LICENSE\",
+-]
++include = [\"src/**/*\", \"README.md\"]
+edition = \"2021\"
+"
+        );
+    }
+
+    #[test]
+    fn indents_every_line_of_unchanged_lines_between_changes() {
+        let output = format_diff(
+            "a = 1
+b = 2
+c = 3
+d = 4
+",
+            "a = 10
+b = 2
+c = 3
+d = 40
+",
+        );
+
+        assert_eq!(
+            output,
+            "Diff - removed / added + :
+-a = 1
++a = 10
+ b = 2
+ c = 3
+-d = 4
++d = 40
 "
         );
     }
