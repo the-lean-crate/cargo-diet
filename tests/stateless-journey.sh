@@ -511,3 +511,21 @@ EOF
     )
   )
 )
+
+(sandbox
+  (with "a cargo project with a multi-line include directive"
+    step "init cargo project" &&
+      expect_run ${SUCCESSFULLY} cargo init --edition 2018 --name library --bin
+
+    printf 'include = [\n  "src/**/*",\n  "Cargo.toml",\n]\n' > include.toml
+    sed -i '/^edition/r include.toml' Cargo.toml && rm include.toml
+    touch src/lib_test.rs
+
+    (with "the -n (dry-run) flag set"
+      it "marks every removed line of the multi-line include" && {
+        WITH_SNAPSHOT="$snapshot/success-multi-line-include-dry-run" \
+        expect_run ${SUCCESSFULLY} "$exe" diet -n
+      }
+    )
+  )
+)
