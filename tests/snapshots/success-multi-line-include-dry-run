@@ -1,0 +1,14 @@
+Include or exclude directives were optimized, without affecting the crate's size.
+
+The following change WOULD be made to Cargo.toml:
+Diff - removed / added + :
+[…skipped 2 lines…]
+version = "0.1.0"
+edition = "2018"
+-include = [
+  "src/**/*",
+  "Cargo.toml",
+]
++include = ["src/**/*"]
+
+[dependencies]
