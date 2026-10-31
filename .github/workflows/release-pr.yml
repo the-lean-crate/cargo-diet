@@ -24,10 +24,18 @@ jobs:
         id: prepare
         uses: $/.github/actions/prepare-release
 
+      - name: Create app token
+        id: app
+        if: steps.prepare.outputs.changed == 'true'
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create or update draft release PR
         if: steps.prepare.outputs.changed == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.app.outputs.token }}
         run: |
           set -euo pipefail
 
