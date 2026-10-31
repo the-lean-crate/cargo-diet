@@ -23,9 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: zizmorcore/zizmor-action
-     dependency-version: 0.7.1
-     dependency-type: direct:production
-     update-type: version-update:semver-minor
+   dependency-version: 0.7.1
+   dependency-type: direct:production
+   update-type: version-update:semver-minor
    ...
  - <csr-id-e7b25f370572dfa74f5f3e803869ea2dd2d78224/> bump Swatinem/rust-cache from 2.9.2 to 2.9.3
    Bumps [Swatinem/rust-cache](https://github.com/swatinem/rust-cache) from 2.9.2 to 2.9.3.
@@ -36,9 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: Swatinem/rust-cache
-     dependency-version: 2.9.3
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 2.9.3
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-ef436c53130f9c741636a3776353bf44cd889fc0/> bump rust-lang/crates-io-auth-action from 1.0.5 to 1.0.6
    Bumps [rust-lang/crates-io-auth-action](https://github.com/rust-lang/crates-io-auth-action) from 1.0.5 to 1.0.6.
@@ -48,9 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: rust-lang/crates-io-auth-action
-     dependency-version: 1.0.6
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 1.0.6
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-2c3470ed71f4dd29cc5df2698b7d60fc4385371d/> bump serde_json from 1.0.151 to 1.0.154
    Bumps [serde_json](https://github.com/serde-rs/json) from 1.0.151 to 1.0.154.
@@ -60,9 +60,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: serde_json
-     dependency-version: 1.0.154
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 1.0.154
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-fc51cbd2fbb9d74e8c2f82d90aa2c33185712cf9/> bump dtolnay/rust-toolchain
    Bumps [dtolnay/rust-toolchain](https://github.com/dtolnay/rust-toolchain) from e2a55d2ffb04f378e9626c28d38b36d230d1e12f to 683b588c487a69d01f6c6ddf40f036ff682cc2c8.
@@ -72,8 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: dtolnay/rust-toolchain
-     dependency-version: 683b588c487a69d01f6c6ddf40f036ff682cc2c8
-     dependency-type: direct:production
+   dependency-version: 683b588c487a69d01f6c6ddf40f036ff682cc2c8
+   dependency-type: direct:production
    ...
  - <csr-id-025d90a5996f80532538e7b86ab9c1cd1f19ab96/> bump dtolnay/rust-toolchain
    Bumps [dtolnay/rust-toolchain](https://github.com/dtolnay/rust-toolchain) from 7e38f4b43b4db5c8dd498af069a4f6196df1d067 to e2a55d2ffb04f378e9626c28d38b36d230d1e12f.
@@ -83,8 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: dtolnay/rust-toolchain
-     dependency-version: e2a55d2ffb04f378e9626c28d38b36d230d1e12f
-     dependency-type: direct:production
+   dependency-version: e2a55d2ffb04f378e9626c28d38b36d230d1e12f
+   dependency-type: direct:production
    ...
  - <csr-id-aa1c70863954ab2b6b2d096a7da448bf2242d6ca/> bump dtolnay/rust-toolchain
    Bumps [dtolnay/rust-toolchain](https://github.com/dtolnay/rust-toolchain) from 02cb101ec7c40f2c49e1d9714d64511d8e1b74de to 7e38f4b43b4db5c8dd498af069a4f6196df1d067.
@@ -94,8 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: dtolnay/rust-toolchain
-     dependency-version: 7e38f4b43b4db5c8dd498af069a4f6196df1d067
-     dependency-type: direct:production
+   dependency-version: 7e38f4b43b4db5c8dd498af069a4f6196df1d067
+   dependency-type: direct:production
    ...
  - <csr-id-416eb204ce2391d841dd8ed17bab06c9c8d81120/> bump thiserror from 2.0.20 to 2.0.21
    Bumps [thiserror](https://github.com/dtolnay/thiserror) from 2.0.20 to 2.0.21.
@@ -105,9 +105,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: thiserror
-     dependency-version: 2.0.21
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 2.0.21
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-9314e817f2630b5f80b219d2a4cfc5fb431e72a7/> bump toml_edit
    Bumps [toml_edit](https://github.com/toml-rs/toml) from 0.25.13+spec-1.1.0 to 0.25.15+spec-1.1.0.
@@ -116,9 +116,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: toml_edit
-     dependency-version: 0.25.15+spec-1.1.0
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 0.25.15+spec-1.1.0
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-ec14d822040736507e0badfde7280374907f22e9/> bump dtolnay/rust-toolchain
    Bumps [dtolnay/rust-toolchain](https://github.com/dtolnay/rust-toolchain) from 6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 to 02cb101ec7c40f2c49e1d9714d64511d8e1b74de.
@@ -128,8 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: dtolnay/rust-toolchain
-     dependency-version: 02cb101ec7c40f2c49e1d9714d64511d8e1b74de
-     dependency-type: direct:production
+   dependency-version: 02cb101ec7c40f2c49e1d9714d64511d8e1b74de
+   dependency-type: direct:production
    ...
  - <csr-id-08969a79cfe2432f31c126c319cf868ac16643ae/> bump zizmorcore/zizmor-action from 0.6.3 to 0.6.4
    Bumps [zizmorcore/zizmor-action](https://github.com/zizmorcore/zizmor-action) from 0.6.3 to 0.6.4.
@@ -139,9 +139,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ---
    updated-dependencies:
    - dependency-name: zizmorcore/zizmor-action
-     dependency-version: 0.6.4
-     dependency-type: direct:production
-     update-type: version-update:semver-patch
+   dependency-version: 0.6.4
+   dependency-type: direct:production
+   update-type: version-update:semver-patch
    ...
  - <csr-id-ade38a58728e37563447320f06509196a29bdcce/> replace json with serde_json
    json is unmaintained (RUSTSEC-2022-0081). Now that locate-cargo-manifest
@@ -201,6 +201,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    case. Error message wording for other invalid input changes
    slightly; behavior for all documented formats (plain int, decimal,
    KB/KiB, case-insensitive units) is unchanged.
+ - <csr-id-45e90b8a08a71201fe9a14b9d621a81c91858cbb/> prepare release
+   * Bump cargo-diet v1.4.2
+   
+   * chore: prepare release
+   
+   ---------
 
 ### Bug Fixes
 
@@ -218,10 +224,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <csr-read-only-do-not-edit/>
 
- - 34 commits contributed to the release.
+ - 35 commits contributed to the release.
  - 62 days passed between releases.
- - 22 commits were understood as [conventional](https://www.conventionalcommits.org).
- - 2 unique issues were worked on: [#115](https://github.com/the-lean-crate/cargo-diet/issues/115), [#117](https://github.com/the-lean-crate/cargo-diet/issues/117)
+ - 23 commits were understood as [conventional](https://www.conventionalcommits.org).
+ - 3 unique issues were worked on: [#115](https://github.com/the-lean-crate/cargo-diet/issues/115), [#116](https://github.com/the-lean-crate/cargo-diet/issues/116), [#117](https://github.com/the-lean-crate/cargo-diet/issues/117)
 
 ### Commit Details
 
@@ -231,10 +237,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  * **[#115](https://github.com/the-lean-crate/cargo-diet/issues/115)**
     - Avoid slashes in release branch name ([`5ca7539`](https://github.com/the-lean-crate/cargo-diet/commit/5ca7539f9d45edd7c16f7a3ef2acff0a58ac828e))
+ * **[#116](https://github.com/the-lean-crate/cargo-diet/issues/116)**
+    - Prepare release ([`45e90b8`](https://github.com/the-lean-crate/cargo-diet/commit/45e90b8a08a71201fe9a14b9d621a81c91858cbb))
  * **[#117](https://github.com/the-lean-crate/cargo-diet/issues/117)**
     - Update autogenerated pr body ([`4264857`](https://github.com/the-lean-crate/cargo-diet/commit/42648575546f32048830c3cdf6e51b772576d700))
  * **Uncategorized**
-    - Bump cargo-diet v1.4.2 ([`6665783`](https://github.com/the-lean-crate/cargo-diet/commit/66657836745b9eb38bf1b8cce50828ddb7ad7efe))
+    - Bump cargo-diet v1.4.2 ([`e4862f0`](https://github.com/the-lean-crate/cargo-diet/commit/e4862f091121de699c9d08a12a00fbe71b9acf68))
     - Fix ubuntu package name for lz4 ([`a244817`](https://github.com/the-lean-crate/cargo-diet/commit/a244817ab9509d67229af66638ec6c853585ae39))
     - Auto-open PRs for releases ([`540a7ee`](https://github.com/the-lean-crate/cargo-diet/commit/540a7eedf1fd7e0cf689a214a89ce717442b0766))
     - Prefix every line of multi-line diff hunks ([`183e0c8`](https://github.com/the-lean-crate/cargo-diet/commit/183e0c821a285e1fd6f90f392d36fca2dceccac7))
