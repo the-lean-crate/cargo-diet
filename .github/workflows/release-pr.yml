@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          branch="release/next"
+          branch="release-next"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
           git checkout -B "$branch"
