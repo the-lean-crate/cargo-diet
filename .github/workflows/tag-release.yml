@@ -3,8 +3,6 @@ name: tag-release
 # After a release PR merges, tag the new version on main if it is not
 # already tagged. The existing release.yml then builds/publishes on the tag.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
