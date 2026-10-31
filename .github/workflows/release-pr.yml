@@ -1,0 +1,46 @@
+name: release-pr
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-pr:
+    name: release-pr
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Prepare release
+        id: prepare
+        uses: $/.github/actions/prepare-release
+
+      - name: Create or update draft release PR
+        if: steps.prepare.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          branch="release/next"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git checkout -B "$branch"
+
+          if git ls-remote --heads origin "$branch" | grep -q "refs/heads/$branch"; then
+            git fetch origin "$branch"
+            git push --force-with-lease origin "HEAD:refs/heads/$branch"
+          else
+            git push -u origin "$branch"
+          fi
+
+          gh pr create --base main --head "$branch" --title "chore: prepare release" --body "" --draft || true
