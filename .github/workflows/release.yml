@@ -9,6 +9,12 @@ on:
     # - ag/release
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v1.4.2)"
+        required: true
+        type: string
 permissions: {}
 jobs:
   create-release:
@@ -22,10 +28,10 @@ jobs:
     # Set to force version number, e.g., when no tag exists.
     # ARTIFACT_VERSION: TEST-0.0.0
     steps:
-      - name: Get the release version from the tag
+      - name: Get the release version from input or tag
         if: env.ARTIFACT_VERSION == ''
         env:
-          REF_NAME: ${{ github.ref_name }}
+          REF_NAME: ${{ github.event.inputs.tag || github.ref_name }}
         run: echo "ARTIFACT_VERSION=$REF_NAME" >> "$GITHUB_ENV"
 
       - name: Set version output
@@ -91,6 +97,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -178,6 +185,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
           persist-credentials: false
 
       - name: Authenticate with crates.io
